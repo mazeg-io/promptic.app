@@ -28,7 +28,7 @@ const _schema = i.schema({
       name: i.string(),
       content: i.string(),
       createdAt: i.number(),
-      updatedAt: i.number(),
+      updatedAt: i.number().indexed(),
     }),
     prompt_metadata: i.entity({
       id: i.string(),
@@ -48,7 +48,7 @@ const _schema = i.schema({
       version: i.number().optional(),
       flowData: i.string().optional(), // JSON string for additional flow data
       createdAt: i.number(),
-      updatedAt: i.number(),
+      updatedAt: i.number().indexed(),
     }),
   },
   links: {

@@ -41,11 +41,8 @@ function Login() {
         idToken: credentialResponse.credential,
         nonce,
       });
-      console.log("444");
 
       if (userInfo && user) {
-        console.log("555");
-
         // First check if a profile already exists for this user
         const { data: existingProfileData } = await db.queryOnce({
           profiles: {
@@ -70,16 +67,21 @@ function Login() {
           ]);
         } else {
           // Create new profile
-          await db.transact([
-            db.tx.profiles[id()]
-              .update({
-                firstName: userInfo.given_name || "",
-                lastName: userInfo.family_name || "",
-                profilePicture: userInfo.picture || "",
-                email: userInfo.email || "",
-              })
-              .link({ $user: user.id }),
-          ]);
+          try {
+            await db.transact([
+              db.tx.profiles[id()]
+                .update({
+                  firstName: userInfo.given_name || "",
+                  lastName: userInfo.family_name || "",
+                  profilePicture: userInfo.picture || "",
+                  email: userInfo.email || "",
+                  userId: user.id,
+                })
+                .link({ $user: user.id }),
+            ]);
+          } catch (err) {
+            console.error("Error creating new profile:", err);
+          }
         }
 
         // Check if the user does not have a project, create one
@@ -92,6 +94,7 @@ function Login() {
             },
           },
         });
+
         if (!projectsData?.projects || projectsData.projects.length === 0) {
           const projectId = id();
           const now = Date.now();
