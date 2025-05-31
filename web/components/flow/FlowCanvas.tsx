@@ -24,6 +24,7 @@ import { useNodeHelpers } from "./helpers/useNodeHelpers";
 import { useGlobal } from "@/lib/context/GlobalContext";
 import { db } from "@/instant";
 import { id } from "@instantdb/react";
+import { Button } from "../ui/button";
 
 const FlowCanvasInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -106,6 +107,7 @@ const FlowCanvasInner: React.FC = () => {
     <div className="flex h-full w-full">
       <FlowSidebar addNode={addNode} nodes={nodes} focusNode={focusNode} />
       {/* <button onClick={handleCreatePrompt}>handleCreatePrompt</button> */}
+      <Button onClick={handleCreatePrompt}>Create Prompt</Button>
       <div className="flex-1 relative">
         <FlowToolbar />
         <ReactFlow
