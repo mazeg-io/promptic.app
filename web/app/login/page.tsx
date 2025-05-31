@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/card";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { db } from "@/instant";
-import { id } from "@instantdb/react";
+import { id, lookup } from "@instantdb/react";
+import { useGlobal } from "@/lib/context/GlobalContext";
 
 function parseIdToken(idToken: string) {
   try {
@@ -28,7 +29,7 @@ function Login() {
   const [nonce] = useState(crypto.randomUUID());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const { setActiveProject } = useGlobal();
   const handleGoogleSuccess = async (credentialResponse: any) => {
     setIsLoading(true);
     setError(null);
@@ -40,18 +41,89 @@ function Login() {
         idToken: credentialResponse.credential,
         nonce,
       });
+      console.log("444");
 
       if (userInfo && user) {
-        await db.transact([
-          db.tx.profiles[id()]
-            .update({
+        console.log("555");
+
+        // First check if a profile already exists for this user
+        const { data: existingProfileData } = await db.queryOnce({
+          profiles: {
+            $: { where: { $user: user.id } },
+          },
+        });
+
+        if (
+          existingProfileData?.profiles &&
+          existingProfileData.profiles.length > 0
+        ) {
+          // Update existing profile
+          const existingProfile = existingProfileData.profiles[0];
+          await db.transact([
+            db.tx.profiles[existingProfile.id].update({
               firstName: userInfo.given_name || "",
               lastName: userInfo.family_name || "",
               profilePicture: userInfo.picture || "",
               email: userInfo.email || "",
-            })
-            .link({ $user: user.id }),
-        ]);
+              userId: user.id,
+            }),
+          ]);
+        } else {
+          // Create new profile
+          await db.transact([
+            db.tx.profiles[id()]
+              .update({
+                firstName: userInfo.given_name || "",
+                lastName: userInfo.family_name || "",
+                profilePicture: userInfo.picture || "",
+                email: userInfo.email || "",
+              })
+              .link({ $user: user.id }),
+          ]);
+        }
+
+        // Check if the user does not have a project, create one
+        const { data: projectsData } = await db.queryOnce({
+          projects: {
+            $: {
+              where: {
+                $users: user.id,
+              },
+            },
+          },
+        });
+        if (!projectsData?.projects || projectsData.projects.length === 0) {
+          const projectId = id();
+          const now = Date.now();
+          const projectName =
+            userInfo?.given_name + "'s Project" || "My First Project";
+
+          await db.transact([
+            db.tx.projects[projectId]
+              .update({
+                name: projectName,
+                key: crypto.randomUUID(),
+                createdAt: now,
+                updatedAt: now,
+              })
+              .link({ $users: user.id }),
+          ]);
+
+          const project = await db.queryOnce({
+            projects: {
+              $: {
+                where: { $users: user.id },
+              },
+            },
+          });
+
+          if (project?.data?.projects && project.data.projects.length > 0) {
+            setActiveProject(project.data.projects[0]);
+          }
+        } else {
+          // Set the first project as active if user already has projects
+          setActiveProject(projectsData.projects[0]);
+        }
       }
     } catch (err: any) {
       let errorMessage = "Authentication failed. ";

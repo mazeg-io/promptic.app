@@ -9,6 +9,8 @@ import React, {
 } from "react";
 import { db } from "@/instant";
 import { IUserProfile } from "@/interaces/IUser";
+import { IProject } from "@/interaces/IProject";
+import { AppSchema } from "@/instant.schema";
 
 interface GlobalState {
   theme: "light" | "dark";
@@ -19,6 +21,8 @@ interface GlobalContextType {
   theme: "light" | "dark";
   setTheme: React.Dispatch<React.SetStateAction<"light" | "dark">>;
   profile: IUserProfile | null;
+  activeProject: IProject | null;
+  setActiveProject: React.Dispatch<React.SetStateAction<IProject | null>>;
   resetContext: () => void;
 }
 
@@ -28,44 +32,56 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const { user } = db.useAuth();
   const [profile, setProfile] = useState<IUserProfile | null>(null);
+  const [activeProject, setActiveProject] = useState<IProject | null>(null);
 
-  const { data: profileData } = db.useQuery(
-    user?.id
-      ? {
-          profiles: {
+  useEffect(() => {
+    if (user?.id && !activeProject) {
+      const fetchActiveProject = async () => {
+        const { data } = await db.queryOnce({
+          projects: {
             $: {
               where: {
-                $user: user.id,
+                $users: user.id,
+              },
+              limit: 1,
+              order: {
+                updatedAt: "desc",
               },
             },
           },
+        });
+        if (data?.projects && data.projects.length > 0) {
+          setActiveProject(data.projects[0]);
         }
-      : null
-  );
+      };
+      fetchActiveProject();
+    }
+  }, [user?.id, activeProject]);
 
   useEffect(() => {
-    // Clear profile immediately when user changes to prevent stale data
+    if (user?.id && !profile) {
+      const fetchProfile = async () => {
+        const { data } = await db.queryOnce({
+          profiles: {
+            $: { where: { $user: user.id } },
+          },
+        });
+        if (data?.profiles && data.profiles.length > 0) {
+          setProfile({
+            ...data.profiles[0],
+            userId: user.id,
+          } as IUserProfile);
+        }
+      };
+      fetchProfile();
+    }
+  }, [user?.id, profile]);
+
+  useEffect(() => {
     if (!user?.id) {
       setProfile(null);
-      return;
+      setActiveProject(null);
     }
-
-    // Set profile only if we have data for the current user
-    if (profileData?.profiles && profileData?.profiles.length > 0) {
-      const profileFromDb = profileData.profiles[0];
-      setProfile({
-        ...profileFromDb,
-        userId: user.id,
-      } as IUserProfile);
-    } else {
-      // No profile data found for this user
-      setProfile(null);
-    }
-  }, [user?.id, profileData]);
-
-  // Immediately clear profile when user changes to prevent stale data
-  useEffect(() => {
-    setProfile(null);
   }, [user?.id]);
 
   const resetContext = () => {
@@ -76,6 +92,8 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   return (
     <GlobalContext.Provider
       value={{
+        activeProject,
+        setActiveProject,
         theme,
         setTheme,
         profile,

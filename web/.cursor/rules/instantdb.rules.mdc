@@ -1,0 +1,43 @@
+---
+description: When the question is about instantdb, or need to add or update some instantdb related code. There is whole docs infomartion about instantdb
+globs: 
+alwaysApply: false
+---
+# InstantDB
+
+> Instant is a modern Firebase. We make you productive by giving your frontend a real-time database. Below is a reference for documentation on using Instant.
+
+## Docs
+
+- [Common mistakes](mdc:https:/instantdb.com/docs/common-mistakes.md): Common mistakes when working with Instant
+- [Getting started](mdc:https:/instantdb.com/docs.md): How to use Instant with React
+- [Initializing Instant](mdc:https:/instantdb.com/docs/init.md): How to integrate Instant with your app.
+- [Modeling data](mdc:https:/instantdb.com/docs/modeling-data.md): How to model data with Instant's schema.
+- [Writing data](mdc:https:/instantdb.com/docs/instaml.md): How to write data with Instant using InstaML.
+- [Reading data](mdc:https:/instantdb.com/docs/instaql.md): How to read data with Instant using InstaQL.
+- [Instant on the Backend](mdc:https:/instantdb.com/docs/backend.md): How to use Instant on the server with the Admin SDK.
+- [Patterns](mdc:https:/instantdb.com/docs/patterns.md): Common patterns for working with InstantDB.
+- [Auth](mdc:https:/instantdb.com/docs/auth.md): Instant supports magic code, OAuth, Clerk, and custom auth.
+- [Magic Code Auth](mdc:https:/instantdb.com/docs/auth/magic-codes.md): How to add magic code auth to your Instant app.
+- [Permissions](mdc:https:/instantdb.com/docs/permissions.md): How to secure your data with Instant's Rule Language.
+- [Managing users](mdc:https:/instantdb.com/docs/users.md): How to manage users in your Instant app.
+- [Presence, Cursors, and Activity](mdc:https:/instantdb.com/docs/presence-and-topics.md): How to add ephemeral features like presence and cursors to your Instant app.
+- [Instant CLI](mdc:https:/instantdb.com/docs/cli.md): How to use the Instant CLI to manage schema and permissions.
+- [Storage](mdc:https:/instantdb.com/docs/storage.md): How to upload and serve files with Instant.
+
+
+## Optional
+
+- [Getting started with React Native](mdc:https:/instantdb.com/docs/start-rn.md): How to use Instant with React Native
+- [Getting started with Vanilla JS](mdc:https:/instantdb.com/docs/start-vanilla.md): How to use Instant with Vanilla JS
+- [Showcase](mdc:https:/instantdb.com/docs/showcase.md): Real world apps built with Instant.
+- [Google OAuth](mdc:https:/instantdb.com/docs/auth/google-oauth.md): How to add Google OAuth to your Instant app.
+- [Sign In with Apple](mdc:https:/instantdb.com/docs/auth/apple.md): How to add Sign In with Apple to your Instant app.
+- [Clerk](mdc:https:/instantdb.com/docs/auth/clerk.md): How to integrate Clerk's auth flow with Instant.
+- [Platform OAuth Integration](mdc:https:/instantdb.com/docs/auth/platform-oauth.md): Allow third-party applications to access Instant resources on behalf of users using OAuth 2.0.
+- [Devtool](mdc:https:/instantdb.com/docs/devtool.md): Use the Instant devtool to inspect your app in development.
+- [Custom email templates and senders](mdc:https:/instantdb.com/docs/emails.md): How to customize magic code emails.
+- [App teams (Pro)](mdc:https:/instantdb.com/docs/teams.md): How to manage your Instant app's team members and their roles.
+- [Using Instant with LLMs](mdc:https:/instantdb.com/docs/using-llms.md): How to use Instant with LLMs
+
+You can parse any question related url from this links

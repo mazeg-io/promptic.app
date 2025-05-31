@@ -12,14 +12,16 @@ const _schema = i.schema({
       lastName: i.string(),
       profilePicture: i.string().optional(),
       email: i.string(),
+      userId: i.string().unique(),
     }),
     projects: i.entity({
       id: i.string(),
       name: i.string(),
       llm_provider: i.string().optional(),
       provider_key: i.string().optional(),
+      key: i.string().unique(),
       createdAt: i.number(),
-      updatedAt: i.number(),
+      updatedAt: i.number().indexed(),
     }),
     prompts: i.entity({
       id: i.string(),
@@ -34,6 +36,20 @@ const _schema = i.schema({
       key: i.string(),
       value: i.string(),
     }),
+    prompt_information: i.entity({
+      id: i.string(),
+      promptId: i.string(),
+      positionX: i.number(),
+      positionY: i.number(),
+      width: i.number().optional(),
+      height: i.number().optional(),
+      nodeType: i.string(),
+      isExpanded: i.boolean().optional(),
+      version: i.number().optional(),
+      flowData: i.string().optional(), // JSON string for additional flow data
+      createdAt: i.number(),
+      updatedAt: i.number(),
+    }),
   },
   links: {
     profileUser: {
@@ -47,6 +63,10 @@ const _schema = i.schema({
     promptMetadata: {
       forward: { on: "prompt_metadata", has: "one", label: "prompt" },
       reverse: { on: "prompts", has: "one", label: "metadata" },
+    },
+    promptInformation: {
+      forward: { on: "prompt_information", has: "one", label: "prompt" },
+      reverse: { on: "prompts", has: "one", label: "information" },
     },
     userProjects: {
       forward: { on: "projects", has: "many", label: "$users" },
