@@ -34,7 +34,7 @@ export const FlowToolbar = ({ room }: { room: any }) => {
 
         <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
 
-        {/* <ToolbarOnlineUsers room={room} /> */}
+        <ToolbarOnlineUsers room={room} />
 
         <Button
           variant="ghost"

@@ -17,6 +17,7 @@ const generateUserColor = (userId: string) => {
 interface PresenceData {
   name?: string;
   color?: string;
+  profilePicture?: string;
   flowX?: number;
   flowY?: number;
   screenX?: number;
@@ -37,98 +38,40 @@ export const usePresence = (room: any): UsePresenceReturn => {
   // Use refs to store stable values that don't cause re-renders
   const stableUserColor = useRef<string | null>(null);
   const stableUserName = useRef<string | null>(null);
+  const stableUserLastName = useRef<string | null>(null);
+  const stableUserProfilePicture = useRef<string | null>(null);
 
   // Initialize stable values only once, but wait for profile
   if (!stableUserColor.current && profile) {
-    const userId = profile.id || profile.email || "anonymous-user";
+    const userId = profile.userId;
     stableUserColor.current = generateUserColor(userId);
-    console.log(
-      "Initialized stable color:",
-      stableUserColor.current,
-      "for userId:",
-      userId
-    );
+    stableUserName.current = profile.firstName || "No name";
+    stableUserLastName.current = profile.lastName || "";
+    stableUserProfilePicture.current = profile?.profilePicture || null;
   }
-
-  // Function to get the best available name from profile
-  const getBestName = () => {
-    if (!profile) return "Anonymous";
-    if (profile.firstName) {
-      return profile.firstName;
-    }
-    if (profile.email) {
-      return profile.email.split("@")[0];
-    }
-    return "Anonymous";
-  };
-
-  // Update name when profile becomes available
-  if (!stableUserName.current && profile) {
-    stableUserName.current = getBestName();
-    console.log(
-      "Initialized stable name:",
-      stableUserName.current,
-      "from profile:",
-      {
-        firstName: profile.firstName,
-        email: profile.email,
-        id: profile.id,
-      }
-    );
-  }
-
-  // Don't initialize presence until we have profile data
-  const shouldInitializePresence =
-    profile && stableUserColor.current && stableUserName.current;
 
   // Add user name into cursors and get presence data
-  const {
-    user: myPresence,
-    peers,
-    publishPresence,
-  } = room.usePresence({
-    initialData: shouldInitializePresence
-      ? {
-          name: stableUserName.current,
-          color: stableUserColor.current,
-          flowX: 0,
-          flowY: 0,
-        }
-      : {
-          name: "Loading...",
-          color: "#999999",
-          flowX: 0,
-          flowY: 0,
-        },
-  });
+  const { user: myPresence, peers, publishPresence } = room.usePresence({});
 
   // Update presence when profile loads
   useEffect(() => {
-    if (
-      profile &&
-      (!stableUserName.current || stableUserName.current === "Loading...")
-    ) {
-      const bestName = getBestName();
-      const userId = profile.id || profile.email || "anonymous-user";
-
+    if (profile && !stableUserName.current) {
+      const name = profile.firstName || "No name";
+      const lastName = profile.lastName || "";
+      const userId = profile.userId;
       if (!stableUserColor.current) {
         stableUserColor.current = generateUserColor(userId);
       }
-
-      stableUserName.current = bestName;
-
+      stableUserName.current = name;
+      stableUserLastName.current = lastName;
       publishPresence({
-        name: bestName,
+        name: name,
+        lastName: lastName,
         color: stableUserColor.current,
-      });
-
-      console.log("Updated presence with profile data:", {
-        name: bestName,
-        color: stableUserColor.current,
-        profile: profile,
+        profilePicture: profile?.profilePicture || undefined,
       });
     }
-  }, [profile, publishPresence]);
+  }, [profile]);
 
   // Add mouse move handler to update presence with flow coordinates
   useEffect(() => {
@@ -140,9 +83,11 @@ export const usePresence = (room: any): UsePresenceReturn => {
         y: event.clientY,
       });
 
-      // Update only position, preserve existing name and color
+      // Update only position, preserve existing name, color and profile picture
       publishPresence({
         name: stableUserName.current,
+        lastName: stableUserLastName.current,
+        profilePicture: profile?.profilePicture || undefined,
         color: stableUserColor.current,
         flowX: flowPosition.x,
         flowY: flowPosition.y,
@@ -158,14 +103,7 @@ export const usePresence = (room: any): UsePresenceReturn => {
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [screenToFlowPosition, publishPresence]);
-
-  console.log("Current state:", {
-    profileLoaded: !!profile,
-    stableName: stableUserName.current,
-    stableColor: stableUserColor.current,
-    shouldInitialize: shouldInitializePresence,
-  });
+  }, []);
 
   return {
     peers,

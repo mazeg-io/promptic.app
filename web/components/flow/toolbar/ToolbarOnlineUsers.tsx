@@ -1,5 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, memo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 import { db } from "@/instant";
 import { useGlobal } from "@/lib/context/GlobalContext";
 
@@ -7,103 +12,105 @@ interface ToolbarOnlineUsersProps {
   room?: any;
 }
 
-const ToolbarOnlineUsers: React.FC<ToolbarOnlineUsersProps> = ({ room }) => {
-  const { profile } = useGlobal();
+interface UserAvatarProps {
+  user: any;
+  isCurrentUser?: boolean;
+}
 
-  // Use presence specifically for user profiles (separate from cursors)
-  const {
-    user: myPresence,
-    peers,
-    publishPresence,
-  } = db.rooms.usePresence(room);
+const UserAvatar: React.FC<UserAvatarProps> = memo(
+  ({ user, isCurrentUser = false }) => {
+    const displayName = useMemo(
+      () => `${user?.name} ${user?.lastName}${isCurrentUser ? " (you)" : ""}`,
+      [user?.name, user?.lastName, isCurrentUser]
+    );
 
-  // Update presence when profile changes
-  useEffect(() => {
-    if (room && profile && publishPresence) {
-      publishPresence({
-        userId: profile.userId,
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        profilePicture: profile.profilePicture || "",
-        email: profile.email,
-        color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
-        joinedAt: Date.now(),
-      });
-    }
-  }, [profile, room, publishPresence]);
+    const avatarAlt = useMemo(
+      () => `${user?.name} ${user?.lastName}`,
+      [user?.name, user?.lastName]
+    );
 
-  const onlineCount = Object.keys(peers).length + (myPresence ? 1 : 0);
-
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex items-center gap-[4px]">
-        {/* Show current user */}
-        {myPresence ? (
-          <div
-            className="relative"
-            title={`${(myPresence as any)?.firstName} ${
-              (myPresence as any)?.lastName
-            } (you)`}
-          >
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="relative">
             <Avatar
               className="w-8 h-8 border-2"
               style={{
-                borderColor: (myPresence as any)?.color || "#3b82f6",
+                borderColor: user?.color || "#6b7280",
               }}
             >
               <AvatarImage
-                src={(myPresence as any)?.profilePicture || ""}
-                alt={`${(myPresence as any)?.firstName} ${
-                  (myPresence as any)?.lastName
-                }`}
+                src={user?.profilePicture || ""}
+                alt={avatarAlt}
                 onError={(e) => {
                   console.log(
                     "Avatar image failed to load:",
-                    (myPresence as any)?.profilePicture
+                    user?.profilePicture
                   );
                 }}
               />
             </Avatar>
             <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
           </div>
-        ) : room ? (
+        </TooltipTrigger>
+        <TooltipContent>{displayName}</TooltipContent>
+      </Tooltip>
+    );
+  }
+);
+
+UserAvatar.displayName = "UserAvatar";
+
+export const ToolbarOnlineUsers = ({ room }: ToolbarOnlineUsersProps) => {
+  const { user: myPresence, peers } = db.rooms.usePresence(room);
+
+  // Memoize the combined users array to prevent unnecessary re-renders
+  const allUsers = useMemo(() => {
+    const users = [];
+    if (myPresence) {
+      users.push({ user: myPresence, isCurrentUser: true, id: "current-user" });
+    }
+    Object.entries(peers).forEach(([peerId, peer]) => {
+      users.push({ user: peer, isCurrentUser: false, id: peerId });
+    });
+    return users;
+  }, [myPresence, peers]);
+
+  const onlineCount = allUsers.length;
+
+  // Memoize the visible users to prevent unnecessary slicing
+  const visibleUsers = useMemo(() => allUsers.slice(0, 4), [allUsers]);
+
+  // Memoize the overflow count
+  const overflowCount = useMemo(
+    () => (allUsers.length > 4 ? allUsers.length - 4 : 0),
+    [allUsers.length]
+  );
+
+  const showLoadingState = room && allUsers.length === 0;
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex items-center gap-[4px]">
+        {showLoadingState ? (
           <div className="text-xs text-yellow-600 px-2 py-1 bg-yellow-50 rounded">
             Loading presence...
           </div>
         ) : null}
 
-        {/* Show other online users */}
-        {Object.entries(peers)
-          .slice(0, 3)
-          .map(([peerId, peer]) => (
-            <div
-              key={peerId}
-              className="relative"
-              title={`${(peer as any)?.firstName} ${(peer as any)?.lastName}`}
-            >
-              <Avatar
-                className="w-8 h-8 border-2"
-                style={{ borderColor: (peer as any)?.color || "#6b7280" }}
-              >
-                <AvatarImage
-                  src={(peer as any)?.profilePicture || ""}
-                  alt={`${(peer as any)?.firstName} ${(peer as any)?.lastName}`}
-                  onError={(e) => {
-                    console.log(
-                      "Peer avatar image failed to load:",
-                      (peer as any)?.profilePicture
-                    );
-                  }}
-                />
-              </Avatar>
-              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-            </div>
-          ))}
+        {/* Show first 4 users */}
+        {visibleUsers.map((userInfo) => (
+          <UserAvatar
+            key={userInfo.id}
+            user={userInfo.user}
+            isCurrentUser={userInfo.isCurrentUser}
+          />
+        ))}
 
-        {/* Show count if more than 3 users */}
-        {Object.keys(peers).length > 3 && (
+        {/* Show count if more than 4 users */}
+        {overflowCount > 0 && (
           <div className="flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-xs font-medium">
-            +{Object.keys(peers).length - 3}
+            +{overflowCount}
           </div>
         )}
 

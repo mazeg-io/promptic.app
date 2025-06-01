@@ -33,7 +33,7 @@ import { db } from "@/instant";
 import { id } from "@instantdb/react";
 import { Button } from "../ui/button";
 import { CustomCursor } from "./CustomCursor";
-import { usePresence } from "@/hooks/usePresence";
+import { usePresence } from "./hooks/usePresence";
 
 const FlowCanvasInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
