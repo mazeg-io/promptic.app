@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
+  useState,
+} from "react";
 import {
   ReactFlow,
   Background,
@@ -24,15 +30,38 @@ import { nodeTypes } from "./nodes/node.types";
 import { useNodeHelpers } from "./helpers/useNodeHelpers";
 import { useGlobal } from "@/lib/context/GlobalContext";
 import { db } from "@/instant";
-import { id } from "@instantdb/react";
+import { id, Cursors } from "@instantdb/react";
 import { Button } from "../ui/button";
+import { CustomCursor } from "./CustomCursor";
+
+const randomDarkColor =
+  "#" +
+  [0, 0, 0]
+    .map(() =>
+      Math.floor(Math.random() * 200)
+        .toString(16)
+        .padStart(2, "0")
+    )
+    .join("");
 
 const FlowCanvasInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
-  const { addNode, focusNode } = useNodeHelpers({ setNodes });
-  const { activeProject } = useGlobal();
+  const { handleCreatePromptNode, focusNode, handleNodesChange } =
+    useNodeHelpers({ setNodes, nodes, onNodesChange });
+  const { activeProject, profile } = useGlobal();
+
+  // Create a room for the current project, with fallback to prevent null
+  const room = activeProject
+    ? db.room("project-canvas", activeProject.id)
+    : db.room("project-canvas", `default-room-${crypto.randomUUID()}`);
+
+  // Add user name into cursors
+  db.rooms.useSyncPresence(room, {
+    name: profile?.firstName || "Anonymous",
+  });
+
   const { data: promptsData } = db.useQuery({
     prompts: {
       $: {
@@ -45,82 +74,7 @@ const FlowCanvasInner: React.FC = () => {
     },
   });
 
-  // Function to update position in database immediately
-  const updatePositionInDB = useCallback(
-    async (
-      nodeId: string,
-      position: { x: number; y: number },
-      informationId: string
-    ) => {
-      try {
-        await db.transact([
-          db.tx.prompt_information[informationId].update({
-            positionX: Math.round(position.x),
-            positionY: Math.round(position.y),
-            updatedAt: Date.now(),
-          }),
-        ]);
-      } catch (error) {
-        console.error("Failed to update position:", error);
-      }
-    },
-    []
-  );
-
-  // Custom onNodesChange handler to track position changes
-  const handleNodesChange = useCallback(
-    (changes: NodeChange[]) => {
-      // Process position changes
-      changes.forEach((change) => {
-        if (change.type === "position" && change.position && !change.dragging) {
-          // Position change completed (not dragging anymore)
-          const node = nodes.find((n) => n.id === change.id);
-          const nodeData = node?.data as any;
-          if (nodeData?.information?.id) {
-            updatePositionInDB(
-              change.id,
-              change.position,
-              nodeData.information.id
-            );
-          }
-        }
-      });
-
-      // Apply changes to React Flow
-      onNodesChange(changes);
-    },
-    [nodes, onNodesChange, updatePositionInDB]
-  );
-
-  const handleCreatePrompt = async () => {
-    const newPromptId = id();
-    const newPromptInformationId = id();
-    const newPrompt = await db.transact([
-      // Create the prompt and link it to the project
-      db.tx.prompts[newPromptId].update({
-        name: "New Prompt",
-        content: "",
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      }),
-      db.tx.prompts[newPromptId].link({ project: activeProject?.id }),
-      db.tx.prompt_information[newPromptInformationId].update({
-        positionX: Math.floor(Math.random() * 400 + 100),
-        promptId: newPromptId,
-        positionY: Math.floor(Math.random() * 300 + 100),
-        height: 100,
-        width: 100,
-        isExpanded: false,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-        nodeType: "prompt",
-      }),
-      db.tx.prompt_information[newPromptInformationId].link({
-        prompt: newPromptId,
-      }),
-    ]);
-  };
-
+  // Add prompt nodes to the canvas based on updates from the database
   useEffect(() => {
     if (promptsData?.prompts) {
       setNodes(
@@ -144,24 +98,39 @@ const FlowCanvasInner: React.FC = () => {
 
   return (
     <div className="flex h-full w-full">
-      <FlowSidebar addNode={addNode} nodes={nodes} focusNode={focusNode} />
-      {/* <button onClick={handleCreatePrompt}>handleCreatePrompt</button> */}
-      <Button onClick={handleCreatePrompt}>Create Prompt</Button>
+      <FlowSidebar
+        handleCreatePromptNode={handleCreatePromptNode}
+        nodes={nodes}
+        focusNode={focusNode}
+      />
       <div className="flex-1 relative">
-        <FlowToolbar />
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={handleNodesChange}
-          onEdgesChange={onEdgesChange}
-          nodeTypes={nodeTypes}
-          fitView
-          className="bg-gray-50 dark:bg-gray-900"
-        >
-          <Background />
-          <Controls />
-          {/* <MiniMap /> */}
-        </ReactFlow>
+        {room && (
+          <>
+            <FlowToolbar room={room} />
+            <Cursors
+              room={room}
+              className="h-full w-full"
+              userCursorColor={randomDarkColor}
+              spaceId="flow-canvas"
+              renderCursor={(props) => (
+                <CustomCursor color={props.color} name={props.presence.name} />
+              )}
+            >
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={handleNodesChange}
+                onEdgesChange={onEdgesChange}
+                nodeTypes={nodeTypes}
+                fitView
+                className="bg-gray-50 dark:bg-gray-900"
+              >
+                <Background />
+                <Controls />
+              </ReactFlow>
+            </Cursors>
+          </>
+        )}
       </div>
     </div>
   );

@@ -62,7 +62,6 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
   const currentContentRef = useRef<string>(data.prompt || "");
 
   const nameRef = useRef<HTMLHeadingElement>(null);
-  console.log("data", data);
 
   // Function to update the database
   const updatePromptInDB = useCallback(

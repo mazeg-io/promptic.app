@@ -1,12 +1,22 @@
 import { useCallback } from "react";
-import { Node, useReactFlow } from "@xyflow/react";
+import { Node, NodeChange, useReactFlow } from "@xyflow/react";
+import { db } from "@/instant";
+import { id } from "@instantdb/react";
+import { useGlobal } from "@/lib/context/GlobalContext";
+import { useFlowUpdates } from "./useFlowUpdates";
 
 export const useNodeHelpers = ({
   setNodes,
+  nodes,
+  onNodesChange,
 }: {
   setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  nodes: Node[];
+  onNodesChange: (changes: NodeChange[]) => void;
 }) => {
   const { fitView } = useReactFlow();
+  const { activeProject } = useGlobal();
+  const { updatePositionInDB } = useFlowUpdates();
 
   const focusNode = useCallback(
     (nodeId: string) => {
@@ -19,34 +29,59 @@ export const useNodeHelpers = ({
     [fitView]
   );
 
-  const addNode = useCallback(
-    (nodeType: string) => {
-      // Calculate a position for the new node (center of viewport with some offset)
-      const position = {
-        x: Math.random() * 400 + 100, // Random position to avoid overlap
-        y: Math.random() * 300 + 100,
-      };
+  const handleCreatePromptNode = async () => {
+    const newPromptId = id();
+    const newPromptInformationId = id();
+    await db.transact([
+      // Create the prompt and link it to the project
+      db.tx.prompts[newPromptId].update({
+        name: "New Prompt",
+        content: "",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }),
+      db.tx.prompts[newPromptId].link({ project: activeProject?.id }),
+      db.tx.prompt_information[newPromptInformationId].update({
+        positionX: Math.floor(Math.random() * 400 + 100),
+        promptId: newPromptId,
+        positionY: Math.floor(Math.random() * 300 + 100),
+        height: 100,
+        width: 100,
+        isExpanded: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        nodeType: "prompt",
+      }),
+      db.tx.prompt_information[newPromptInformationId].link({
+        prompt: newPromptId,
+      }),
+    ]);
+  };
 
-      const newNodeId = `${nodeType}-${Date.now()}`;
-      const newNode: Node = {
-        id: newNodeId,
-        type: nodeType,
-        position,
-        data: {
-          label: `${nodeType} node`,
-          prompt: "",
-        },
-      };
+  // Custom onNodesChange handler to track changes
+  const handleNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      changes.forEach((change) => {
+        // Handle and track position changes
+        if (change.type === "position" && change.position && !change.dragging) {
+          // Position change completed (not dragging anymore)
+          const node = nodes.find((n) => n.id === change.id);
+          const nodeData = node?.data as any;
+          if (nodeData?.information?.id) {
+            updatePositionInDB(
+              change.id,
+              change.position,
+              nodeData.information.id
+            );
+          }
+        }
+      });
 
-      setNodes((nds) => nds.concat(newNode));
-
-      // Focus on the newly created node after a short delay to ensure it's rendered
-      setTimeout(() => {
-        focusNode(newNodeId);
-      }, 100);
+      // Apply changes to React Flow
+      onNodesChange(changes);
     },
-    [setNodes, focusNode]
+    [nodes, onNodesChange, updatePositionInDB]
   );
 
-  return { addNode, focusNode };
+  return { handleCreatePromptNode, focusNode, handleNodesChange };
 };

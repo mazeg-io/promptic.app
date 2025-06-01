@@ -27,7 +27,7 @@ interface NodePaletteItem {
 }
 
 interface FlowSidebarProps {
-  addNode: (nodeType: string) => void;
+  handleCreatePromptNode: () => void;
   nodes: Node[];
   focusNode: (nodeId: string) => void;
 }
@@ -42,7 +42,7 @@ const nodePalette: NodePaletteItem[] = [
 ];
 
 export const FlowSidebar: React.FC<FlowSidebarProps> = ({
-  addNode,
+  handleCreatePromptNode,
   nodes,
   focusNode,
 }) => {
@@ -77,7 +77,7 @@ export const FlowSidebar: React.FC<FlowSidebarProps> = ({
 
         <div className="px-[16px] mt-[16px]">
           <Button
-            onClick={() => addNode("promptNode")}
+            onClick={handleCreatePromptNode}
             className="w-full"
             size={"lg"}
           >
