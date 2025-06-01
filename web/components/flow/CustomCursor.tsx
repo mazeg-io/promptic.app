@@ -2,6 +2,12 @@
 
 import React from "react";
 import { useReactFlow } from "@xyflow/react";
+import {
+  ChevronUp,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 interface CustomCursorProps {
   color?: string;
@@ -84,6 +90,7 @@ export const CustomCursor = ({
         const screenY = presence.flowY * viewport.zoom + viewport.y;
 
         const arrowSize = 12;
+        const chevronSize = 20; // Larger size for better visibility
         const edgeMargin = 8;
 
         // Check if cursor is outside viewport bounds
@@ -96,28 +103,29 @@ export const CustomCursor = ({
 
         if (isOutside) {
           // Calculate arrow position at corners/edges
-          let arrowX, arrowY, rotation;
+          let arrowX: number, arrowY: number;
+          let ChevronIcon: typeof ChevronUp = ChevronUp; // Default to ChevronUp
 
           if (isOutsideLeft && isOutsideTop) {
-            // Top-left corner
+            // Top-left corner - use up chevron
             arrowX = edgeMargin;
             arrowY = edgeMargin;
-            rotation = 315; // Point up-left
+            ChevronIcon = ChevronUp;
           } else if (isOutsideRight && isOutsideTop) {
-            // Top-right corner
+            // Top-right corner - use up chevron
             arrowX = containerRect.width - edgeMargin - arrowSize;
             arrowY = edgeMargin;
-            rotation = 45; // Point up-right
+            ChevronIcon = ChevronUp;
           } else if (isOutsideLeft && isOutsideBottom) {
-            // Bottom-left corner
+            // Bottom-left corner - use down chevron
             arrowX = edgeMargin;
             arrowY = containerRect.height - edgeMargin - arrowSize;
-            rotation = 225; // Point down-left
+            ChevronIcon = ChevronDown;
           } else if (isOutsideRight && isOutsideBottom) {
-            // Bottom-right corner
+            // Bottom-right corner - use down chevron
             arrowX = containerRect.width - edgeMargin - arrowSize;
             arrowY = containerRect.height - edgeMargin - arrowSize;
-            rotation = 135; // Point down-right
+            ChevronIcon = ChevronDown;
           } else if (isOutsideLeft) {
             // Left edge
             arrowX = edgeMargin;
@@ -128,7 +136,7 @@ export const CustomCursor = ({
                 containerRect.height - edgeMargin - arrowSize
               )
             );
-            rotation = 270; // Point left
+            ChevronIcon = ChevronLeft;
           } else if (isOutsideRight) {
             // Right edge
             arrowX = containerRect.width - edgeMargin - arrowSize;
@@ -139,7 +147,7 @@ export const CustomCursor = ({
                 containerRect.height - edgeMargin - arrowSize
               )
             );
-            rotation = 90; // Point right
+            ChevronIcon = ChevronRight;
           } else if (isOutsideTop) {
             // Top edge
             arrowX = Math.max(
@@ -150,7 +158,7 @@ export const CustomCursor = ({
               )
             );
             arrowY = edgeMargin;
-            rotation = 0; // Point up
+            ChevronIcon = ChevronUp;
           } else if (isOutsideBottom) {
             // Bottom edge
             arrowX = Math.max(
@@ -161,7 +169,12 @@ export const CustomCursor = ({
               )
             );
             arrowY = containerRect.height - edgeMargin - arrowSize;
-            rotation = 180; // Point down
+            ChevronIcon = ChevronDown;
+          } else {
+            // Fallback case
+            arrowX = edgeMargin;
+            arrowY = edgeMargin;
+            ChevronIcon = ChevronUp;
           }
 
           return (
@@ -173,20 +186,13 @@ export const CustomCursor = ({
                 top: arrowY,
                 width: arrowSize,
                 height: arrowSize,
-                transform: `rotate(${rotation}deg)`,
               }}
             >
-              <svg
-                width={arrowSize}
-                height={arrowSize}
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M12 2L20 10L16 10L16 22L8 22L8 10L4 10L12 2Z"
-                  fill={presence.color || stableUserColor}
-                />
-              </svg>
+              <ChevronIcon
+                size={chevronSize}
+                color={presence.color || stableUserColor}
+                strokeWidth={2}
+              />
             </div>
           );
         } else {
