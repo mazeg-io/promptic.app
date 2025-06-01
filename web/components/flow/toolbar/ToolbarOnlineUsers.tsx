@@ -29,8 +29,6 @@ const UserAvatar: React.FC<UserAvatarProps> = memo(
       [user?.name, user?.lastName]
     );
 
-    console.log("user", user?.profilePicture);
-
     return (
       <Tooltip>
         <TooltipTrigger asChild>

@@ -22,6 +22,7 @@ interface PresenceData {
   flowY?: number;
   screenX?: number;
   screenY?: number;
+  liveCommentText?: string;
 }
 
 interface UsePresenceReturn {
@@ -31,7 +32,13 @@ interface UsePresenceReturn {
   myPresence: PresenceData;
 }
 
-export const usePresence = (room: any): UsePresenceReturn => {
+export const usePresence = ({
+  room,
+  liveCommentText,
+}: {
+  room: any;
+  liveCommentText: string;
+}): UsePresenceReturn => {
   const { profile } = useGlobal();
   const { screenToFlowPosition } = useReactFlow();
 
@@ -75,6 +82,19 @@ export const usePresence = (room: any): UsePresenceReturn => {
     }
   }, [profile, publishPresence]);
 
+  useEffect(() => {
+    if (liveCommentText && liveCommentText.length > 0) {
+      publishPresence({
+        liveCommentText: liveCommentText,
+      });
+    } else if (liveCommentText === "") {
+      // Clear liveCommentText when it's empty
+      publishPresence({
+        liveCommentText: undefined,
+      });
+    }
+  }, [liveCommentText]);
+
   // Add mouse move handler to update presence with flow coordinates
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -100,6 +120,7 @@ export const usePresence = (room: any): UsePresenceReturn => {
         flowY: flowPosition.y,
         screenX: event.clientX,
         screenY: event.clientY,
+        liveCommentText: liveCommentText,
       });
     };
 
@@ -110,7 +131,7 @@ export const usePresence = (room: any): UsePresenceReturn => {
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [screenToFlowPosition, publishPresence]);
+  }, [screenToFlowPosition, publishPresence, liveCommentText]);
 
   return {
     peers,

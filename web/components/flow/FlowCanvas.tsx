@@ -34,12 +34,15 @@ import { id } from "@instantdb/react";
 import { Button } from "../ui/button";
 import { CustomCursor } from "./CustomCursor";
 import { usePresence } from "./hooks/usePresence";
+import LiveComment from "./LiveComment";
 
 const FlowCanvasInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-
+  const [isLiveCommenting, setIsLiveCommenting] = useState(false);
+  const [liveCommentText, setLiveCommentText] = useState("");
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { handleCreatePromptNode, focusNode, handleNodesChange } =
     useNodeHelpers({ setNodes, nodes, onNodesChange });
   const { activeProject, profile } = useGlobal();
@@ -50,7 +53,10 @@ const FlowCanvasInner: React.FC = () => {
     : db.room("project-canvas", `default-room-${crypto.randomUUID()}`);
 
   // Use the presence hook
-  const { peers, stableUserColor, isReady } = usePresence(room);
+  const { peers, stableUserColor, isReady } = usePresence({
+    room,
+    liveCommentText,
+  });
 
   const { data: promptsData } = db.useQuery({
     prompts: {
@@ -123,6 +129,16 @@ const FlowCanvasInner: React.FC = () => {
                   stableUserColor={stableUserColor}
                 />
               )}
+
+              {/* Live commenting cursor follower */}
+              <LiveComment
+                mousePosition={mousePosition}
+                setIsLiveCommenting={setIsLiveCommenting}
+                setMousePosition={setMousePosition}
+                isLiveCommenting={isLiveCommenting}
+                liveCommentText={liveCommentText}
+                setLiveCommentText={setLiveCommentText}
+              />
             </div>
           </>
         )}

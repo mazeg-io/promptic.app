@@ -12,6 +12,7 @@ import {
 interface CustomCursorProps {
   color?: string;
   name: string;
+  liveCommentText?: string;
 }
 
 interface PresenceData {
@@ -21,6 +22,7 @@ interface PresenceData {
   flowY?: number;
   screenX?: number;
   screenY?: number;
+  liveCommentText?: string;
 }
 
 interface CustomCursorContainerProps {
@@ -29,9 +31,13 @@ interface CustomCursorContainerProps {
   stableUserColor: string;
 }
 
-export function CursorPointer({ color, name }: CustomCursorProps) {
+export function CursorPointer({
+  color,
+  name,
+  liveCommentText,
+}: CustomCursorProps) {
   return (
-    <div className="pointer-events-none relative">
+    <div className="pointer-events-none relative max-w-[200px]">
       {/* Cursor pointer */}
       <svg
         width="24"
@@ -49,12 +55,24 @@ export function CursorPointer({ color, name }: CustomCursorProps) {
       </svg>
       {/* Name label */}
       <span
-        className={`absolute top-5 left-2 rounded-b-xl rounded-r-xl border-2 bg-white/90 px-3 py-1 text-xs font-medium shadow-lg backdrop-blur-md dark:bg-gray-800/90 dark:text-white transition-all duration-200`}
+        className={`
+          ${
+            liveCommentText && liveCommentText.length > 0
+              ? "text-gray-500"
+              : "text-gray-900"
+          }
+          w-max
+          absolute top-5 left-2 rounded-b-xl rounded-r-xl border-2 bg-white/90 px-3 py-1 text-xs font-medium shadow-lg backdrop-blur-md dark:bg-gray-800/90 dark:text-white transition-all duration-200`}
         style={{
           borderColor: color ?? "#3b82f6",
         }}
       >
         {name}
+        {liveCommentText && (
+          <span className="max-w-[200px] text-xs text-gray-800 block">
+            {liveCommentText}
+          </span>
+        )}
       </span>
     </div>
   );
@@ -203,6 +221,7 @@ export const CustomCursor = ({
               <CursorPointer
                 color={presence.color || stableUserColor}
                 name={presence.name || "Anonymous"}
+                liveCommentText={presence.liveCommentText}
               />
             </div>
           );
