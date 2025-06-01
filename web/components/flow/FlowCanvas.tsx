@@ -30,23 +30,15 @@ import { nodeTypes } from "./nodes/node.types";
 import { useNodeHelpers } from "./helpers/useNodeHelpers";
 import { useGlobal } from "@/lib/context/GlobalContext";
 import { db } from "@/instant";
-import { id, Cursors } from "@instantdb/react";
+import { id } from "@instantdb/react";
 import { Button } from "../ui/button";
 import { CustomCursor } from "./CustomCursor";
-
-const randomDarkColor =
-  "#" +
-  [0, 0, 0]
-    .map(() =>
-      Math.floor(Math.random() * 200)
-        .toString(16)
-        .padStart(2, "0")
-    )
-    .join("");
+import { usePresence } from "@/hooks/usePresence";
 
 const FlowCanvasInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
   const { handleCreatePromptNode, focusNode, handleNodesChange } =
     useNodeHelpers({ setNodes, nodes, onNodesChange });
@@ -57,10 +49,8 @@ const FlowCanvasInner: React.FC = () => {
     ? db.room("project-canvas", activeProject.id)
     : db.room("project-canvas", `default-room-${crypto.randomUUID()}`);
 
-  // Add user name into cursors
-  db.rooms.useSyncPresence(room, {
-    name: profile?.firstName || "Anonymous",
-  });
+  // Use the presence hook
+  const { peers, stableUserColor, isReady } = usePresence(room);
 
   const { data: promptsData } = db.useQuery({
     prompts: {
@@ -96,6 +86,11 @@ const FlowCanvasInner: React.FC = () => {
     }
   }, [promptsData]);
 
+  // Don't render until profile is loaded
+  if (!profile) {
+    return;
+  }
+
   return (
     <div className="flex h-full w-full">
       <FlowSidebar
@@ -107,15 +102,7 @@ const FlowCanvasInner: React.FC = () => {
         {room && (
           <>
             <FlowToolbar room={room} />
-            <Cursors
-              room={room}
-              className="h-full w-full"
-              userCursorColor={randomDarkColor}
-              spaceId="flow-canvas"
-              renderCursor={(props) => (
-                <CustomCursor color={props.color} name={props.presence.name} />
-              )}
-            >
+            <div className="relative h-full w-full" ref={reactFlowWrapper}>
               <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -128,7 +115,15 @@ const FlowCanvasInner: React.FC = () => {
                 <Background />
                 <Controls />
               </ReactFlow>
-            </Cursors>
+
+              {isReady && (
+                <CustomCursor
+                  peers={peers}
+                  reactFlowWrapper={reactFlowWrapper}
+                  stableUserColor={stableUserColor}
+                />
+              )}
+            </div>
           </>
         )}
       </div>
