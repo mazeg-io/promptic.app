@@ -72,13 +72,6 @@ export const CustomCursor = ({
       {Object.entries(peers).map(([peerId, presence]) => {
         if (!presence.flowX || !presence.flowY) return null;
 
-        console.log(
-          "Rendering cursor for peer:",
-          peerId,
-          "presence:",
-          presence
-        );
-
         // Get the ReactFlow viewport to calculate cursor positions
         const viewport = reactFlowInstance.getViewport();
         const containerRect = reactFlowWrapper.current?.getBoundingClientRect();

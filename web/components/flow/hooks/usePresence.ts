@@ -40,43 +40,50 @@ export const usePresence = (room: any): UsePresenceReturn => {
   const stableUserName = useRef<string | null>(null);
   const stableUserLastName = useRef<string | null>(null);
   const stableUserProfilePicture = useRef<string | null>(null);
-
-  // Initialize stable values only once, but wait for profile
-  if (!stableUserColor.current && profile) {
-    const userId = profile.userId;
-    stableUserColor.current = generateUserColor(userId);
-    stableUserName.current = profile.firstName || "No name";
-    stableUserLastName.current = profile.lastName || "";
-    stableUserProfilePicture.current = profile?.profilePicture || null;
-  }
+  const hasPublishedInitialPresence = useRef<boolean>(false);
 
   // Add user name into cursors and get presence data
   const { user: myPresence, peers, publishPresence } = room.usePresence({});
 
-  // Update presence when profile loads
+  // Update presence when profile loads or changes
   useEffect(() => {
-    if (profile && !stableUserName.current) {
+    if (profile) {
       const name = profile.firstName || "No name";
       const lastName = profile.lastName || "";
       const userId = profile.userId;
+      const profilePicture = profile?.profilePicture || null;
+
+      // Initialize stable values if not already set
       if (!stableUserColor.current) {
         stableUserColor.current = generateUserColor(userId);
       }
+
+      // Update stable values
       stableUserName.current = name;
       stableUserLastName.current = lastName;
+      stableUserProfilePicture.current = profilePicture;
+
+      // Always publish presence when profile is available
       publishPresence({
         name: name,
         lastName: lastName,
         color: stableUserColor.current,
-        profilePicture: profile?.profilePicture || undefined,
+        profilePicture: profilePicture || undefined,
       });
+
+      hasPublishedInitialPresence.current = true;
     }
-  }, [profile]);
+  }, [profile, publishPresence]);
 
   // Add mouse move handler to update presence with flow coordinates
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
-      if (!stableUserName.current || !stableUserColor.current) return;
+      if (
+        !stableUserName.current ||
+        !stableUserColor.current ||
+        !hasPublishedInitialPresence.current
+      )
+        return;
 
       const flowPosition = screenToFlowPosition({
         x: event.clientX,
@@ -87,7 +94,7 @@ export const usePresence = (room: any): UsePresenceReturn => {
       publishPresence({
         name: stableUserName.current,
         lastName: stableUserLastName.current,
-        profilePicture: profile?.profilePicture || undefined,
+        profilePicture: stableUserProfilePicture.current || undefined,
         color: stableUserColor.current,
         flowX: flowPosition.x,
         flowY: flowPosition.y,
@@ -103,12 +110,15 @@ export const usePresence = (room: any): UsePresenceReturn => {
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [screenToFlowPosition, publishPresence]);
 
   return {
     peers,
     stableUserColor: stableUserColor.current || "#999999",
-    isReady: !!profile && !!stableUserColor.current,
+    isReady:
+      !!profile &&
+      !!stableUserColor.current &&
+      hasPublishedInitialPresence.current,
     myPresence,
   };
 };

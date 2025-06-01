@@ -119,7 +119,6 @@ function ProjectSettingsModal({ isOpen, onClose }: ProjectSettingsModalProps) {
           $users: userToAdd.userId,
         }),
       ]);
-      console.log("result", result);
 
       alert("User added to project successfully");
       setNewUserEmail("");

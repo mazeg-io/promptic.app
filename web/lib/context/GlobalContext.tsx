@@ -34,10 +34,21 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<IUserProfile | null>(null);
   const [activeProject, setActiveProject] = useState<IProject | null>(null);
 
-  useEffect(() => {
-    if (user?.id && !activeProject) {
-      const fetchActiveProject = async () => {
-        const { data } = await db.queryOnce({
+  // Use reactive query for profile to automatically update when profile is created/updated
+  const { data: profileData } = db.useQuery(
+    user?.id
+      ? {
+          profiles: {
+            $: { where: { $user: user.id } },
+          },
+        }
+      : null
+  );
+
+  // Use reactive query for active project to automatically update
+  const { data: projectData } = db.useQuery(
+    user?.id
+      ? {
           projects: {
             $: {
               where: {
@@ -49,33 +60,36 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
               },
             },
           },
-        });
-        if (data?.projects && data.projects.length > 0) {
-          setActiveProject(data.projects[0]);
         }
-      };
-      fetchActiveProject();
-    }
-  }, [user?.id, activeProject]);
+      : null
+  );
 
+  // Update profile state when query data changes
   useEffect(() => {
-    if (user?.id && !profile) {
-      const fetchProfile = async () => {
-        const { data } = await db.queryOnce({
-          profiles: {
-            $: { where: { $user: user.id } },
-          },
-        });
-        if (data?.profiles && data.profiles.length > 0) {
-          setProfile({
-            ...data.profiles[0],
-            userId: user.id,
-          } as IUserProfile);
-        }
-      };
-      fetchProfile();
+    if (profileData?.profiles?.[0]) {
+      setProfile({
+        ...profileData.profiles[0],
+        userId: user?.id || "",
+      } as IUserProfile);
+    } else if (user?.id && profileData?.profiles?.length === 0) {
+      // Profile query returned empty array, meaning no profile exists yet
+      setProfile(null);
     }
-  }, [user?.id, profile]);
+  }, [profileData, user?.id]);
+
+  // Update activeProject state when query data changes
+  useEffect(() => {
+    if (
+      projectData?.projects &&
+      projectData?.projects?.length > 0 &&
+      projectData?.projects?.[0]
+    ) {
+      setActiveProject(projectData.projects[0]);
+    } else if (user?.id && projectData?.projects?.length === 0) {
+      // Project query returned empty array, meaning no projects exist yet
+      setActiveProject(null);
+    }
+  }, [projectData, user?.id]);
 
   useEffect(() => {
     if (!user?.id) {
@@ -87,6 +101,7 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   const resetContext = () => {
     setTheme("light");
     setProfile(null);
+    setActiveProject(null);
   };
 
   return (

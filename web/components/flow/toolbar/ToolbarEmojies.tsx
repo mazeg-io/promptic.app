@@ -76,7 +76,6 @@ export const ToolbarEmojies = ({ room }: { room: any }) => {
     ({ name, directionAngle, rotationAngle }: any) => {
       const emojiConfig = emojiReactions.find((e) => e.name === name);
       if (!emojiConfig) return;
-      console.log("name", name);
       animateEmoji(
         { emoji: emojiConfig.emoji, directionAngle, rotationAngle },
         emojiRefsRef.current[name]?.current || null

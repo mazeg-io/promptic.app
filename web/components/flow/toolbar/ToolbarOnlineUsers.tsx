@@ -29,6 +29,8 @@ const UserAvatar: React.FC<UserAvatarProps> = memo(
       [user?.name, user?.lastName]
     );
 
+    console.log("user", user?.profilePicture);
+
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -39,15 +41,12 @@ const UserAvatar: React.FC<UserAvatarProps> = memo(
                 borderColor: user?.color || "#6b7280",
               }}
             >
-              <AvatarImage
-                src={user?.profilePicture || ""}
+              <img
+                src={user?.profilePicture}
                 alt={avatarAlt}
-                onError={(e) => {
-                  console.log(
-                    "Avatar image failed to load:",
-                    user?.profilePicture
-                  );
-                }}
+                className="w-full h-full object-cover"
+                crossOrigin="anonymous"
+                referrerPolicy="no-referrer"
               />
             </Avatar>
             <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
@@ -94,7 +93,7 @@ export const ToolbarOnlineUsers = ({ room }: ToolbarOnlineUsersProps) => {
       <div className="flex items-center gap-[4px]">
         {showLoadingState ? (
           <div className="text-xs text-yellow-600 px-2 py-1 bg-yellow-50 rounded">
-            Loading presence...
+            Loading...
           </div>
         ) : null}
 
