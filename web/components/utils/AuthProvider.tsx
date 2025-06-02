@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         router.push("/login");
       } else if (user && isAuthRoute(pathname)) {
         // User authenticated but on an auth-specific page, redirect to home
-        router.push("/flow");
+        router.push("/");
       }
     }
   }, [isLoading, user, pathname, router]);
