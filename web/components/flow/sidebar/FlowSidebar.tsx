@@ -106,7 +106,7 @@ export const FlowSidebar: React.FC<FlowSidebarProps> = ({
                       <Type className="h-4 w-4 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <div className="text-sm font-medium truncate">
-                          {(node.data as any)?.label || node.type}
+                          {(node.data as any)?.name || node.type}
                         </div>
                       </div>
                     </div>

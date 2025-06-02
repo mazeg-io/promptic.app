@@ -84,6 +84,7 @@ const FlowCanvasInner: React.FC = () => {
           data: {
             name: prompt.name,
             prompt: prompt.content,
+            variables: prompt.variables,
             metadata: prompt.metadata,
             information: prompt.information,
           },

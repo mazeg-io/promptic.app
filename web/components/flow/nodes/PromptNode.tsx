@@ -28,6 +28,7 @@ import { db } from "@/instant";
 export interface PromptNodeData extends Record<string, unknown> {
   name: string;
   prompt: string;
+  variables: string;
   isExpanded?: boolean;
   version?: number;
   tags?: string[];
@@ -63,6 +64,13 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
 
   const nameRef = useRef<HTMLHeadingElement>(null);
 
+  const extractVariables = useCallback((prompt: string) => {
+    const variables = prompt.match(/{{.*?}}/g);
+    return variables
+      ?.map((variable) => variable.replace(/{{|}}/g, ""))
+      .join(", ");
+  }, []);
+
   // Function to update the database
   const updatePromptInDB = useCallback(
     async (newContent?: string, newName?: string) => {
@@ -83,6 +91,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
         await db.transact([
           db.tx.prompts[id].update({
             ...updates,
+            variables: extractVariables(newContent || ""),
             updatedAt: Date.now(),
           }),
         ]);
@@ -251,7 +260,11 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      await db.transact([db.tx.prompts[id].delete()]);
+                    }}
+                  >
                     <Trash className="text-red-500 h-4 w-4 mr-2" />
                     Delete
                   </DropdownMenuItem>
@@ -287,18 +300,17 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={isLoading || !prompt.trim()}
-                className="flex items-center gap-2"
-              >
-                <Wand2 className="h-4 w-4" />
-                Enhance
-              </Button>
+            <div>
+              <p className="text-xs text-gray-500 mb-[6px]">Variables: </p>
+              <div className="flex items-center gap-2 max-w-[70%] flex-wrap">
+                {data?.variables &&
+                  data.variables.split(", ").map((variable: string) => (
+                    <Badge variant="outline" className="text-xs">
+                      {variable}
+                    </Badge>
+                  ))}
+              </div>
             </div>
-
             <div className="text-xs text-gray-500">
               {prompt.length} characters
             </div>
