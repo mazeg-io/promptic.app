@@ -262,17 +262,29 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
         </CardHeader>
 
         <CardContent className="space-y-3">
-          <Textarea
-            value={prompt}
-            onChange={(e) => {
-              handlePromptChange(e.target.value);
-            }}
-            placeholder="Enter your prompt here..."
-            className={`
-            resize-none font-mono text-sm min-h-[150px]
-          `}
-            disabled={isLoading}
-          />
+          <div
+            onMouseDown={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+            onDragStart={(e) => e.preventDefault()}
+            onDrag={(e) => e.preventDefault()}
+            className="nodrag"
+          >
+            <Textarea
+              value={prompt}
+              onChange={(e) => {
+                handlePromptChange(e.target.value);
+              }}
+              onDrag={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              placeholder="Enter your prompt here..."
+              className={`
+              resize-none font-mono text-sm min-h-[150px] nodrag
+            `}
+              disabled={isLoading}
+            />
+          </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
