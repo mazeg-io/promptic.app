@@ -33,8 +33,9 @@ import { db } from "@/instant";
 import { id } from "@instantdb/react";
 import { Button } from "../ui/button";
 import { CustomCursor } from "./CustomCursor";
-import { usePresence } from "./hooks/usePresence";
+import { usePresence } from "./helpers/usePresence";
 import LiveComment from "./LiveComment";
+import ChatSidebar from "@/components/ChatSidebar/ChatSidebar";
 
 const FlowCanvasInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -42,6 +43,7 @@ const FlowCanvasInner: React.FC = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [isLiveCommenting, setIsLiveCommenting] = useState(false);
   const [liveCommentText, setLiveCommentText] = useState("");
+  const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { handleCreatePromptNode, focusNode, handleNodesChange } =
     useNodeHelpers({ setNodes, nodes, onNodesChange });
@@ -87,11 +89,13 @@ const FlowCanvasInner: React.FC = () => {
             variables: prompt.variables,
             metadata: prompt.metadata,
             information: prompt.information,
+            isChatSidebarOpen: isChatSidebarOpen,
+            setIsChatSidebarOpen: setIsChatSidebarOpen,
           },
         }))
       );
     }
-  }, [promptsData]);
+  }, [promptsData, isChatSidebarOpen]);
 
   // Don't render until profile is loaded
   if (!profile) {
@@ -145,6 +149,12 @@ const FlowCanvasInner: React.FC = () => {
                 liveCommentText={liveCommentText}
                 setLiveCommentText={setLiveCommentText}
               />
+              {isChatSidebarOpen && (
+                <ChatSidebar
+                  isOpen={isChatSidebarOpen}
+                  setIsOpen={setIsChatSidebarOpen}
+                />
+              )}
             </div>
           </>
         )}

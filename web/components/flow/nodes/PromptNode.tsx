@@ -32,6 +32,8 @@ export interface PromptNodeData extends Record<string, unknown> {
   isExpanded?: boolean;
   version?: number;
   tags?: string[];
+  isChatSidebarOpen?: boolean;
+  setIsChatSidebarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   information?: {
     id: string;
     positionX: number;
@@ -250,9 +252,17 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
             </div>
 
             <div className="flex items-center gap-1">
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={() =>
+                  data.setIsChatSidebarOpen?.(!data.isChatSidebarOpen)
+                }
+              >
                 <Maximize2 className="h-4 w-4" />
               </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
