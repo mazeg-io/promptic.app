@@ -34,6 +34,7 @@ export interface PromptNodeData extends Record<string, unknown> {
   tags?: string[];
   isChatSidebarOpen?: boolean;
   setIsChatSidebarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  setEditingPrompt?: React.Dispatch<React.SetStateAction<string | null>>;
   information?: {
     id: string;
     positionX: number;
@@ -256,9 +257,10 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8 p-0"
-                onClick={() =>
-                  data.setIsChatSidebarOpen?.(!data.isChatSidebarOpen)
-                }
+                onClick={() => {
+                  data.setEditingPrompt?.(data.prompt);
+                  data.setIsChatSidebarOpen?.(!data.isChatSidebarOpen);
+                }}
               >
                 <Maximize2 className="h-4 w-4" />
               </Button>

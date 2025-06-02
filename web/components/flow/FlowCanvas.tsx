@@ -43,8 +43,9 @@ const FlowCanvasInner: React.FC = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [isLiveCommenting, setIsLiveCommenting] = useState(false);
   const [liveCommentText, setLiveCommentText] = useState("");
-  const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(false);
+  const [editingPrompt, setEditingPrompt] = useState<string | null>(null);
   const { handleCreatePromptNode, focusNode, handleNodesChange } =
     useNodeHelpers({ setNodes, nodes, onNodesChange });
   const { activeProject, profile } = useGlobal();
@@ -91,6 +92,7 @@ const FlowCanvasInner: React.FC = () => {
             information: prompt.information,
             isChatSidebarOpen: isChatSidebarOpen,
             setIsChatSidebarOpen: setIsChatSidebarOpen,
+            setEditingPrompt: setEditingPrompt,
           },
         }))
       );
@@ -153,6 +155,7 @@ const FlowCanvasInner: React.FC = () => {
                 <ChatSidebar
                   isOpen={isChatSidebarOpen}
                   setIsOpen={setIsChatSidebarOpen}
+                  editingPrompt={editingPrompt}
                 />
               )}
             </div>
