@@ -118,6 +118,11 @@ const FlowCanvasInner: React.FC = () => {
                 nodeTypes={nodeTypes}
                 fitView
                 className="bg-gray-50 dark:bg-gray-900"
+                panOnDrag={false}
+                panActivationKeyCode="Space"
+                panOnScroll={true}
+                zoomOnScroll={false}
+                zoomActivationKeyCode="Meta"
               >
                 <Background />
                 <Controls />
