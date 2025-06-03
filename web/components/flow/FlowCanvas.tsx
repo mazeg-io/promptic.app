@@ -35,7 +35,20 @@ import { Button } from "../ui/button";
 import { CustomCursor } from "./CustomCursor";
 import { usePresence } from "./helpers/usePresence";
 import LiveComment from "./LiveComment";
-import ChatSidebar from "@/components/ChatSidebar/ChatSidebar";
+import ChatSidebar from "@/components/promptEditor/ChatSidebar/ChatSidebar";
+import { FullScreenPromptEditor } from "../promptEditor/FullScreenPromptEditor";
+
+export interface EditingPrompt {
+  id: string;
+  name: string;
+  prompt: string;
+  animationOrigin?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+}
 
 const FlowCanvasInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -44,8 +57,9 @@ const FlowCanvasInner: React.FC = () => {
   const [isLiveCommenting, setIsLiveCommenting] = useState(false);
   const [liveCommentText, setLiveCommentText] = useState("");
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(false);
-  const [editingPrompt, setEditingPrompt] = useState<string | null>(null);
+  const [editingPrompt, setEditingPrompt] = useState<EditingPrompt | null>(
+    null
+  );
   const { handleCreatePromptNode, focusNode, handleNodesChange } =
     useNodeHelpers({ setNodes, nodes, onNodesChange });
   const { activeProject, profile } = useGlobal();
@@ -90,14 +104,12 @@ const FlowCanvasInner: React.FC = () => {
             variables: prompt.variables,
             metadata: prompt.metadata,
             information: prompt.information,
-            isChatSidebarOpen: isChatSidebarOpen,
-            setIsChatSidebarOpen: setIsChatSidebarOpen,
             setEditingPrompt: setEditingPrompt,
           },
         }))
       );
     }
-  }, [promptsData, isChatSidebarOpen]);
+  }, [promptsData]);
 
   // Don't render until profile is loaded
   if (!profile) {
@@ -111,6 +123,13 @@ const FlowCanvasInner: React.FC = () => {
         nodes={nodes}
         focusNode={focusNode}
       />
+      {editingPrompt && (
+        <FullScreenPromptEditor
+          isOpen={!!editingPrompt}
+          onClose={() => setEditingPrompt(null)}
+          prompt={editingPrompt}
+        />
+      )}
       <div className="flex-1 relative">
         {room && (
           <>
@@ -151,13 +170,13 @@ const FlowCanvasInner: React.FC = () => {
                 liveCommentText={liveCommentText}
                 setLiveCommentText={setLiveCommentText}
               />
-              {isChatSidebarOpen && (
+              {/* {isChatSidebarOpen && (
                 <ChatSidebar
                   isOpen={isChatSidebarOpen}
                   setIsOpen={setIsChatSidebarOpen}
-                  editingPrompt={editingPrompt}
+                  editingPrompt={editingPrompt?.prompt || null}
                 />
-              )}
+              )} */}
             </div>
           </>
         )}

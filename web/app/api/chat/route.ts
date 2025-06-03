@@ -9,22 +9,15 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
   const result = streamText({
     model: openai("gpt-4o"),
-    messages: [
-      {
-        role: "system",
-        content: "Your name is Promptic AI",
-      },
-      ...messages,
-    ],
+    messages,
     tools: {
       prompt_write: tool({
         description:
-          "Call this tool when user ask to rewrite or write a prompt",
+          "Call this tool when user ask to rewrite or write a prompt. If user ask to rewrite part of the prompt, you still should return the whole prompt but with the updated part.",
         parameters: z.object({
-          prompt: z.string().describe("writed or updated prompt"),
+          prompt: z.string().describe("writed or updated prompt."),
         }),
         execute: async ({ prompt }) => {
-          console.log("prompt_write", prompt);
           return {
             prompt,
           };

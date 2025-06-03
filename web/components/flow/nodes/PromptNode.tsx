@@ -12,6 +12,7 @@ import {
   Maximize2,
   Minimize2,
   Trash,
+  Sparkle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +25,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { db } from "@/instant";
+import { FullScreenPromptEditor } from "@/components/promptEditor/FullScreenPromptEditor";
+import { EditingPrompt } from "../FlowCanvas";
 
 export interface PromptNodeData extends Record<string, unknown> {
   name: string;
@@ -32,9 +35,7 @@ export interface PromptNodeData extends Record<string, unknown> {
   isExpanded?: boolean;
   version?: number;
   tags?: string[];
-  isChatSidebarOpen?: boolean;
-  setIsChatSidebarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  setEditingPrompt?: React.Dispatch<React.SetStateAction<string | null>>;
+  setEditingPrompt?: React.Dispatch<React.SetStateAction<EditingPrompt | null>>;
   information?: {
     id: string;
     positionX: number;
@@ -66,6 +67,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
   const currentContentRef = useRef<string>(data.prompt || "");
 
   const nameRef = useRef<HTMLHeadingElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const extractVariables = useCallback((prompt: string) => {
     const variables = prompt.match(/{{.*?}}/g);
@@ -210,9 +212,34 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
     return () => clearTimeout(stopTimer);
   }, [prompt, stopInterval]);
 
+  // Function to handle opening the full screen editor with animation data
+  const handleOpenFullScreenEditor = useCallback(() => {
+    if (textareaRef.current) {
+      const rect = textareaRef.current.getBoundingClientRect();
+      data.setEditingPrompt?.({
+        id: id,
+        name: name,
+        prompt: prompt,
+        animationOrigin: {
+          x: rect.left,
+          y: rect.top,
+          width: rect.width,
+          height: rect.height,
+        },
+      });
+    } else {
+      data.setEditingPrompt?.({
+        id: id,
+        name: name,
+        prompt: prompt,
+      });
+    }
+  }, [id, name, prompt, data.setEditingPrompt]);
+
   return (
     <>
       <Card
+        onDoubleClick={handleOpenFullScreenEditor}
         className={`
         min-w-[400px] max-w-[1000px]
         ${selected ? "ring-2 ring-blue-500" : ""}
@@ -257,12 +284,9 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8 p-0"
-                onClick={() => {
-                  data.setEditingPrompt?.(data.prompt);
-                  data.setIsChatSidebarOpen?.(!data.isChatSidebarOpen);
-                }}
+                onClick={handleOpenFullScreenEditor}
               >
-                <Maximize2 className="h-4 w-4" />
+                <Sparkles className="h-4 w-4 text-purple-500" />
               </Button>
 
               <DropdownMenu>
@@ -295,6 +319,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
             className="nodrag"
           >
             <Textarea
+              ref={textareaRef}
               value={prompt}
               onChange={(e) => {
                 handlePromptChange(e.target.value);
@@ -335,6 +360,8 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
           className="w-3 h-3 bg-green-500"
         />
       </Card>
+
+      {/* Full Screen Prompt Editor */}
     </>
   );
 };
