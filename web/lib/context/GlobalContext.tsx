@@ -10,12 +10,6 @@ import React, {
 import { db } from "@/instant";
 import { IUserProfile } from "@/interaces/IUser";
 import { IProject } from "@/interaces/IProject";
-import { AppSchema } from "@/instant.schema";
-
-interface GlobalState {
-  theme: "light" | "dark";
-  profile: IUserProfile | null;
-}
 
 interface GlobalContextType {
   theme: "light" | "dark";

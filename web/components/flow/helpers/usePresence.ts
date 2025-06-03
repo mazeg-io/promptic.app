@@ -93,7 +93,7 @@ export const usePresence = ({
         liveCommentText: undefined,
       });
     }
-  }, [liveCommentText]);
+  }, [liveCommentText, publishPresence]);
 
   // Add mouse move handler to update presence with flow coordinates
   useEffect(() => {

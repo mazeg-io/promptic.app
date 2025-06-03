@@ -6,7 +6,6 @@ import { useGlobal } from "@/lib/context/GlobalContext";
 import { useFlowUpdates } from "./useFlowUpdates";
 
 export const useNodeHelpers = ({
-  setNodes,
   nodes,
   onNodesChange,
 }: {
@@ -66,7 +65,7 @@ export const useNodeHelpers = ({
         if (change.type === "position" && change.position && !change.dragging) {
           // Position change completed (not dragging anymore)
           const node = nodes.find((n) => n.id === change.id);
-          const nodeData = node?.data as any;
+          const nodeData = node?.data as { information: { id: string } };
           if (nodeData?.information?.id) {
             updatePositionInDB(
               change.id,

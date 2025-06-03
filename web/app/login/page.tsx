@@ -1,17 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { GoogleOAuthProvider, GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import { db } from "@/instant";
-import { id, lookup } from "@instantdb/react";
+import { id } from "@instantdb/react";
 import { useGlobal } from "@/lib/context/GlobalContext";
 
 function parseIdToken(idToken: string) {
@@ -21,6 +17,7 @@ function parseIdToken(idToken: string) {
     const parsed = JSON.parse(decoded);
     return parsed;
   } catch (error) {
+    console.error("Error parsing ID token:", error);
     return null;
   }
 }
@@ -30,15 +27,15 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { setActiveProject } = useGlobal();
-  const handleGoogleSuccess = async (credentialResponse: any) => {
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const userInfo = parseIdToken(credentialResponse.credential);
+      const userInfo = parseIdToken(credentialResponse.credential || "");
       const { user } = await db.auth.signInWithIdToken({
         clientName: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_NAME || "",
-        idToken: credentialResponse.credential,
+        idToken: credentialResponse.credential || "",
         nonce,
       });
 
@@ -128,18 +125,19 @@ function Login() {
           setActiveProject(projectsData.projects[0]);
         }
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { body?: { message?: string }; message?: string };
       let errorMessage = "Authentication failed. ";
 
-      if (err.body?.message?.includes("origin")) {
+      if (error.body?.message?.includes("origin")) {
         errorMessage +=
           "Origin validation failed. Please check your domain configuration in InstantDB settings.";
-      } else if (err.body?.message?.includes("Validation failed")) {
+      } else if (error.body?.message?.includes("Validation failed")) {
         errorMessage +=
           "Validation failed. Please check your Google OAuth and InstantDB configuration.";
       } else {
         errorMessage +=
-          err.body?.message || err.message || "Unknown error occurred.";
+          error.body?.message || error.message || "Unknown error occurred.";
       }
       setError(errorMessage);
     } finally {
@@ -147,7 +145,8 @@ function Login() {
     }
   };
 
-  const handleGoogleError = (error?: any) => {
+  const handleGoogleError = (error?: { message?: string }) => {
+    console.error("Google sign-in failed:", error);
     setError("Google sign-in failed. Please try again.");
   };
 

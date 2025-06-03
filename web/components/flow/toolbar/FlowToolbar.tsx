@@ -1,18 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Play,
-  Square,
-  RotateCcw,
-  Save,
-  Download,
-  Upload,
-  Settings,
-  Zap,
-} from "lucide-react";
+import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import ProjectSettingsModal from "@/components/utils/ProjectSettingsModal";
 import ToolbarEmojies from "./ToolbarEmojies";
 import ToolbarOnlineUsers from "./ToolbarOnlineUsers";

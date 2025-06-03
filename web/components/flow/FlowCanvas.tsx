@@ -1,26 +1,17 @@
 "use client";
 
 import React, {
-  useCallback,
   useEffect,
   useRef,
-  useMemo,
   useState,
 } from "react";
 import {
   ReactFlow,
   Background,
   Controls,
-  MiniMap,
   useNodesState,
-  useEdgesState,
-  addEdge,
-  Connection,
   Node,
-  Edge,
   ReactFlowProvider,
-  useReactFlow,
-  NodeChange,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -30,12 +21,9 @@ import { nodeTypes } from "./nodes/node.types";
 import { useNodeHelpers } from "./helpers/useNodeHelpers";
 import { useGlobal } from "@/lib/context/GlobalContext";
 import { db } from "@/instant";
-import { id } from "@instantdb/react";
-import { Button } from "../ui/button";
 import { CustomCursor } from "./CustomCursor";
 import { usePresence } from "./helpers/usePresence";
 import LiveComment from "./LiveComment";
-import ChatSidebar from "@/components/promptEditor/ChatSidebar/ChatSidebar";
 import { FullScreenPromptEditor } from "../promptEditor/FullScreenPromptEditor";
 
 export interface EditingPrompt {
@@ -52,7 +40,6 @@ export interface EditingPrompt {
 
 const FlowCanvasInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [isLiveCommenting, setIsLiveCommenting] = useState(false);
   const [liveCommentText, setLiveCommentText] = useState("");
@@ -109,7 +96,7 @@ const FlowCanvasInner: React.FC = () => {
         }))
       );
     }
-  }, [promptsData]);
+  }, [promptsData, setNodes]);
 
   // Don't render until profile is loaded
   if (!profile) {
@@ -137,9 +124,7 @@ const FlowCanvasInner: React.FC = () => {
             <div className="relative h-full w-full" ref={reactFlowWrapper}>
               <ReactFlow
                 nodes={nodes}
-                edges={edges}
                 onNodesChange={handleNodesChange}
-                onEdgesChange={onEdgesChange}
                 nodeTypes={nodeTypes}
                 fitView
                 className="bg-gray-50 dark:bg-gray-900"
@@ -170,13 +155,6 @@ const FlowCanvasInner: React.FC = () => {
                 liveCommentText={liveCommentText}
                 setLiveCommentText={setLiveCommentText}
               />
-              {/* {isChatSidebarOpen && (
-                <ChatSidebar
-                  isOpen={isChatSidebarOpen}
-                  setIsOpen={setIsChatSidebarOpen}
-                  editingPrompt={editingPrompt?.prompt || null}
-                />
-              )} */}
             </div>
           </>
         )}

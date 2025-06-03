@@ -1,9 +1,7 @@
 import { db } from "@/instant";
-import { useGlobal } from "@/lib/context/GlobalContext";
 import { useCallback } from "react";
 
 export const useFlowUpdates = () => {
-  const { activeProject } = useGlobal();
 
   const updatePositionInDB = useCallback(
     async (

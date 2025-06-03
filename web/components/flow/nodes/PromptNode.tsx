@@ -1,18 +1,11 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useRef } from "react";
-import { Handle, Position, NodeProps } from "@xyflow/react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import { NodeProps } from "@xyflow/react";
 import {
-  Wand2,
-  RefreshCw,
   Sparkles,
-  Copy,
-  Save,
   MoreHorizontal,
-  Maximize2,
-  Minimize2,
   Trash,
-  Sparkle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,7 +18,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { db } from "@/instant";
-import { FullScreenPromptEditor } from "@/components/promptEditor/FullScreenPromptEditor";
 import { EditingPrompt } from "../FlowCanvas";
 
 export interface PromptNodeData extends Record<string, unknown> {
@@ -36,6 +28,7 @@ export interface PromptNodeData extends Record<string, unknown> {
   version?: number;
   tags?: string[];
   setEditingPrompt?: React.Dispatch<React.SetStateAction<EditingPrompt | null>>;
+  updateNode?: (nodeId: string, newData: Partial<PromptNodeData>) => void;
   information?: {
     id: string;
     positionX: number;
@@ -56,18 +49,16 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
   id,
   selected,
 }) => {
-  const [prompt, setPrompt] = useState(data.prompt || "");
-  const [name, setName] = useState(data.name || "Prompt Node");
-  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
-  // Content tracking refs
-  const intervalTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const lastSavedContentRef = useRef<string>(data.prompt || "");
-  const currentContentRef = useRef<string>(data.prompt || "");
-
-  const nameRef = useRef<HTMLHeadingElement>(null);
+  const [prompt, setPrompt] = useState(data.prompt);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const nameRef = useRef<HTMLHeadingElement>(null);
+
+  // Update local prompt when data.prompt changes
+  useEffect(() => {
+    setPrompt(data.prompt);
+  }, [data.prompt]);
 
   const extractVariables = useCallback((prompt: string) => {
     const variables = prompt.match(/{{.*?}}/g);
@@ -76,13 +67,13 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
       .join(", ");
   }, []);
 
-  // Function to update the database
+  // Function to update the database and node
   const updatePromptInDB = useCallback(
     async (newContent?: string, newName?: string) => {
       if (!id) return;
 
-      const updates: any = {};
-      if (newContent && newContent !== lastSavedContentRef.current) {
+      const updates: Record<string, unknown> = {};
+      if (newContent != null) {
         updates.content = newContent;
       }
       if (newName !== undefined && newName !== data.name) {
@@ -100,8 +91,14 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
             updatedAt: Date.now(),
           }),
         ]);
-        if (newContent && updates.content) {
-          lastSavedContentRef.current = newContent;
+
+        // Update the node data directly
+        if (data.updateNode) {
+          data.updateNode(id, {
+            prompt: newContent || data.prompt,
+            name: newName || data.name,
+            variables: extractVariables(newContent || ""),
+          });
         }
       } catch (error) {
         console.error("Failed to update prompt:", error);
@@ -109,19 +106,44 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
         setIsSaving(false);
       }
     },
-    [id, data.name]
+    [id, data, extractVariables]
   );
+
+  // Handle prompt content changes with debouncing
+  const handlePromptChange = useCallback(
+    (newContent: string) => {
+      // Update local state immediately
+      setPrompt(newContent);
+      
+      // Clear any existing timeout
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+
+      // Set a new timeout for database update
+      debounceTimeoutRef.current = setTimeout(() => {
+        updatePromptInDB(newContent);
+      }, 500); // 500ms debounce
+    },
+    [updatePromptInDB]
+  );
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Handle name changes
   const handleNameBlur = useCallback(() => {
     if (nameRef.current) {
       const newName = nameRef.current.textContent || "";
-      setName(newName);
-      if (newName.trim() !== data.name) {
-        updatePromptInDB(currentContentRef.current, newName.trim());
-      }
+      updatePromptInDB(undefined, newName.trim());
     }
-  }, [data.name, updatePromptInDB]);
+  }, [updatePromptInDB]);
 
   const handleNameClick = useCallback(() => {
     if (nameRef.current) {
@@ -150,76 +172,14 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
     [data.name]
   );
 
-  // Handle prompt content changes with interval-based updates
-  const handlePromptChange = useCallback(
-    (newContent: string) => {
-      setPrompt(newContent);
-      currentContentRef.current = newContent;
-
-      // If no interval is running, start one
-      if (!intervalTimerRef.current) {
-        intervalTimerRef.current = setInterval(() => {
-          // Check if content has changed since last save
-          if (currentContentRef.current !== lastSavedContentRef.current) {
-            updatePromptInDB(currentContentRef.current);
-          }
-        }, 500);
-      }
-    },
-    [updatePromptInDB]
-  );
-
-  // Stop interval when user stops typing (after a delay)
-  const stopInterval = useCallback(() => {
-    if (intervalTimerRef.current) {
-      clearInterval(intervalTimerRef.current);
-      intervalTimerRef.current = null;
-      // Send final update if there are unsaved changes
-      if (currentContentRef.current !== lastSavedContentRef.current) {
-        updatePromptInDB(currentContentRef.current);
-      }
-    }
-  }, [updatePromptInDB]);
-
-  // Update local state when data changes (from external updates)
-  useEffect(() => {
-    setPrompt(data.prompt || "");
-    setName(data.name || "Prompt Node");
-    currentContentRef.current = data.prompt || "";
-    lastSavedContentRef.current = data.prompt || "";
-
-    // Update the contentEditable element if it exists
-    if (
-      nameRef.current &&
-      nameRef.current.textContent !== (data.name || "Prompt Node")
-    ) {
-      nameRef.current.textContent = data.name || "Prompt Node";
-    }
-  }, [data.prompt, data.name]);
-
-  // Cleanup timer on unmount
-  useEffect(() => {
-    return () => {
-      if (intervalTimerRef.current) {
-        clearInterval(intervalTimerRef.current);
-      }
-    };
-  }, []);
-
-  // Stop content interval after user stops typing for 1 second
-  useEffect(() => {
-    const stopTimer = setTimeout(stopInterval, 1000);
-    return () => clearTimeout(stopTimer);
-  }, [prompt, stopInterval]);
-
   // Function to handle opening the full screen editor with animation data
   const handleOpenFullScreenEditor = useCallback(() => {
     if (textareaRef.current) {
       const rect = textareaRef.current.getBoundingClientRect();
       data.setEditingPrompt?.({
         id: id,
-        name: name,
-        prompt: prompt,
+        name: data.name,
+        prompt: data.prompt,
         animationOrigin: {
           x: rect.left,
           y: rect.top,
@@ -230,11 +190,11 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
     } else {
       data.setEditingPrompt?.({
         id: id,
-        name: name,
-        prompt: prompt,
+        name: data.name,
+        prompt: data.prompt,
       });
     }
-  }, [id, name, prompt, data.setEditingPrompt]);
+  }, [id, data]);
 
   return (
     <>
@@ -246,13 +206,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
         shadow-lg hover:shadow-xl transition-shadow duration-200
       `}
       >
-        <Handle
-          type="target"
-          position={Position.Top}
-          className="w-3 h-3 bg-blue-500"
-        />
-
-        <CardHeader className="pb-3">
+        <CardHeader className="">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h3
@@ -262,10 +216,10 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
                 onBlur={handleNameBlur}
                 onClick={handleNameClick}
                 onKeyDown={handleNameKeyDown}
-                className="font-semibold text-sm cursor-text hover:bg-gray-100 rounded px-1 py-0.5 transition-colors outline-none focus:ring-1 focus:ring-blue-500"
+                className="font-semibold text-lg cursor-text hover:bg-gray-100 rounded px-1 py-0.5 transition-colors outline-none focus:ring-1 focus:ring-blue-500"
                 title="Click to edit name"
               >
-                {name}
+                {data.name}
               </h3>
               {data.version && (
                 <Badge variant="secondary" className="text-xs">
@@ -310,7 +264,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-3">
+        <CardContent>
           <div
             onMouseDown={(e) => e.stopPropagation()}
             onPointerDown={(e) => e.stopPropagation()}
@@ -330,19 +284,21 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
               }}
               placeholder="Enter your prompt here..."
               className={`
-              resize-none font-mono text-sm min-h-[150px] nodrag
+              resize-none font-mono text-base leading-relaxed min-h-[150px] nodrag
+              p-4 bg-gray-50/50
+              focus:bg-white focus:ring-2 focus:ring-blue-500/20
+              transition-colors duration-200
             `}
-              disabled={isLoading}
             />
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pt-4">
             <div>
               <p className="text-xs text-gray-500 mb-[6px]">Variables: </p>
               <div className="flex items-center gap-2 max-w-[70%] flex-wrap">
                 {data?.variables &&
                   data.variables.split(", ").map((variable: string) => (
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline" className="text-xs" key={variable}>
                       {variable}
                     </Badge>
                   ))}
@@ -353,12 +309,6 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
             </div>
           </div>
         </CardContent>
-
-        <Handle
-          type="source"
-          position={Position.Bottom}
-          className="w-3 h-3 bg-green-500"
-        />
       </Card>
 
       {/* Full Screen Prompt Editor */}

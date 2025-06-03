@@ -90,7 +90,7 @@ function LiveComment({
       document.removeEventListener("keydown", handleKeyDown);
       console.log("Event listeners removed"); // Debug log
     };
-  }, []);
+  }, [setIsLiveCommenting, setLiveCommentText]);
 
   // Track mouse position globally
   useEffect(() => {
@@ -103,7 +103,7 @@ function LiveComment({
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [setMousePosition]);
 
   return (
     <>

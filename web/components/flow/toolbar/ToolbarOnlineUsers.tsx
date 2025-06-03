@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo, memo } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import React, {  useMemo, memo } from "react";
+import { Avatar } from "@/components/ui/avatar";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { db } from "@/instant";
-import { useGlobal } from "@/lib/context/GlobalContext";
 
 interface ToolbarOnlineUsersProps {
   room?: any;
@@ -63,7 +62,7 @@ export const ToolbarOnlineUsers = ({ room }: ToolbarOnlineUsersProps) => {
 
   // Memoize the combined users array to prevent unnecessary re-renders
   const allUsers = useMemo(() => {
-    const users = [];
+    const users: { user: any; isCurrentUser: boolean; id: string }[] = [];
     if (myPresence) {
       users.push({ user: myPresence, isCurrentUser: true, id: "current-user" });
     }

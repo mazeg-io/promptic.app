@@ -2,44 +2,22 @@
 
 import React, { useState } from "react";
 import {
-  Plus,
   Type,
   Layers,
-  Settings,
   PlusIcon,
-  Menu,
-  CircleEllipsis,
   Logs,
-  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
 import ProjectSwitchOrCreateModal from "@/components/utils/ProjectSwitchOrCreateModal";
 import { Node } from "@xyflow/react";
 import { useGlobal } from "@/lib/context/GlobalContext";
-
-interface NodePaletteItem {
-  type: string;
-  label: string;
-  icon: React.ReactNode;
-  description: string;
-}
 
 interface FlowSidebarProps {
   handleCreatePromptNode: () => void;
   nodes: Node[];
   focusNode: (nodeId: string) => void;
 }
-
-const nodePalette: NodePaletteItem[] = [
-  {
-    type: "promptNode",
-    label: "Prompt Node",
-    icon: <Type className="h-4 w-4" />,
-    description: "AI prompt with enhancement tools",
-  },
-];
 
 export const FlowSidebar: React.FC<FlowSidebarProps> = ({
   handleCreatePromptNode,

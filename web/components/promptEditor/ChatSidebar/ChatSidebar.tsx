@@ -50,7 +50,7 @@ function ChatSidebar({
         handleDiff(tool.args.prompt);
       }
     }
-  }, [messages]);
+  }, [messages, handleDiff]);
 
   const handleAcceptAllClick = () => {
     handleAcceptAll();
