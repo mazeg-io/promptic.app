@@ -38,6 +38,7 @@ export const useFullScreenModalAnimation = ({
         modalRef.current.style.overflow = "hidden";
 
         // Force a reflow
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         modalRef.current.offsetHeight;
 
         // Add transition

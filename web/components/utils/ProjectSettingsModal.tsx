@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,9 +15,6 @@ import { Badge } from "@/components/ui/badge";
 import { UserPlus, Users, Mail, X } from "lucide-react";
 import { db } from "@/instant";
 import { useGlobal } from "@/lib/context/GlobalContext";
-import { IProject } from "@/interaces/IProject";
-import { IUserProfile } from "@/interaces/IUser";
-import { id } from "@instantdb/react";
 
 interface ProjectSettingsModalProps {
   isOpen: boolean;
@@ -114,11 +111,7 @@ function ProjectSettingsModal({ isOpen, onClose }: ProjectSettingsModalProps) {
       }
 
       // Add user to project using the userProjects link
-      const result = await db.transact([
-        db.tx.projects[activeProject.id].link({
-          $users: userToAdd.userId,
-        }),
-      ]);
+      await db.transact([db.tx.projects[activeProject.id].link({ $users: userToAdd.userId })]);
 
       alert("User added to project successfully");
       setNewUserEmail("");

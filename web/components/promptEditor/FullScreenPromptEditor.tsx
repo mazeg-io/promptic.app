@@ -2,16 +2,9 @@
 
 import React, {
   useState,
-  useCallback,
   useEffect,
   useRef,
-  useMemo,
 } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { X, Minimize2, Save, Sparkles, Plus, Minus } from "lucide-react";
-import { db } from "@/instant";
 import ChatSidebar from "@/components/promptEditor/ChatSidebar/ChatSidebar";
 import { EditingPrompt } from "../flow/FlowCanvas";
 import type { Change } from "diff";
@@ -82,7 +75,6 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
     processedDiff,
     handleRejectLine,
     handleAcceptLine,
-    checkAndExitDiffMode,
     handleDiff,
     handleAcceptAll,
     handleRejectAll,
