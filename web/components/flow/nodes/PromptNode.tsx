@@ -76,7 +76,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
       if (newContent != null) {
         updates.content = newContent;
       }
-      if (newName !== undefined && newName !== data.name) {
+      if (newName !== undefined && newName !== data.name && newName.trim() !== "") {
         updates.name = newName;
       }
 
