@@ -28,6 +28,28 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<IUserProfile | null>(null);
   const [activeProject, setActiveProject] = useState<IProject | null>(null);
 
+  // Apply theme to document and persist to localStorage
+  useEffect(() => {
+    // Load theme from localStorage on mount
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Apply theme class to document
+    const root = document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+
+    // Save theme to localStorage
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
   // Use reactive query for profile to automatically update when profile is created/updated
   const { data: profileData } = db.useQuery(
     user?.id

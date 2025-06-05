@@ -198,7 +198,9 @@ export const useDiffFunctions = ({
   };
 
   const processedDiff = useMemo(() => {
-    if (!isDiffMode || !originalContent || !promptContent) return [];
+    if (!isDiffMode || !originalContent || !promptContent) {
+      return [];
+    }
 
     // Normalize line endings - ensure both texts end with newline for consistent diffing
     const normalizedOldText = originalContent.endsWith("\n")

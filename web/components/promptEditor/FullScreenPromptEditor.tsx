@@ -1,16 +1,14 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useRef,
-} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ChatSidebar from "@/components/promptEditor/ChatSidebar/ChatSidebar";
 import { EditingPrompt } from "../flow/FlowCanvas";
 import type { Change } from "diff";
 import { useFullScreenModalAnimation } from "./helpers/useFullScreenModalAnimation";
 import { renderContent } from "./DiffStyles";
 import { useDiffFunctions } from "./helpers/useDiffFunctions";
+import { useResizableSidebar } from "./helpers/useResizableSidebar";
+import { Button } from "@/components/ui/button";
 
 export interface ProcessedLine {
   type: "added" | "removed" | "unchanged";
@@ -35,6 +33,13 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
   const [isDiffMode, setIsDiffMode] = useState(false);
   const [originalContent, setOriginalContent] = useState<string>("");
   const modalRef = useRef<HTMLDivElement | null>(null);
+
+  // Resizable sidebar hook
+  const { sidebarWidth, isResizing, startResize } = useResizableSidebar({
+    initialWidth: 500,
+    minWidth: 280,
+    maxWidth: 1000,
+  });
 
   // Sidebar animation hook
   const { isAnimating, animationPhase, sidebarOpacity, handleClose } =
@@ -87,11 +92,17 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
     setOriginalContent,
   });
 
+  // Calculate main content width based on sidebar width and animation phase
+  const mainContentWidth =
+    animationPhase === "open" ? `calc(100% - ${sidebarWidth}px)` : "100%";
+
   return (
     <div
       ref={modalRef}
-      className={`flex w-screen h-screen absolute top-0 left-0 z-[100] bg-white ${
-        animationPhase === "opening" && isAnimating ? "shadow-2xl" : ""
+      className={`flex w-screen h-screen absolute top-0 left-0 z-[100] bg-white dark:bg-gray-900 ${
+        animationPhase === "opening" && isAnimating
+          ? "shadow-2xl dark:shadow-gray-800/50"
+          : ""
       }`}
       style={{
         ...(animationPhase === "opening" && isAnimating
@@ -103,13 +114,22 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
     >
       {/* Main content area */}
       <div
-        className={`flex bg-white overflow-hidden transition-all duration-300 ${
-          animationPhase === "open" ? "w-[80%]" : "w-full"
-        }`}
+        className="flex bg-white dark:bg-gray-900 overflow-hidden transition-all duration-300"
         style={{
+          width: mainContentWidth,
           opacity: animationPhase === "opening" && isAnimating ? 0.9 : 1,
         }}
       >
+        {isDiffMode && (
+          <div className="absolute bottom-[32px] right-[50%] dark:bg-gray-800 bg-gray-600 shadow-lg px-[12px] py-[6px] rounded-[12px] flex gap-[12px] w-fit">
+            <Button variant="outline" size="sm" onClick={handleRejectAll}>
+              Reject All
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleAcceptAll}>
+              Accept All
+            </Button>
+          </div>
+        )}
         {renderContent({
           isDiffMode,
           processedDiff,
@@ -127,11 +147,15 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
           style={{ opacity: sidebarOpacity }}
         >
           <ChatSidebar
+            isDiffMode={isDiffMode}
             onClose={handleClose}
             editingPrompt={promptContent}
             handleDiff={handleDiff}
             handleAcceptAll={handleAcceptAll}
             handleRejectAll={handleRejectAll}
+            width={sidebarWidth}
+            onResizeStart={startResize}
+            isResizing={isResizing}
           />
         </div>
       )}

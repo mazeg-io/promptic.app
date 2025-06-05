@@ -2,11 +2,7 @@
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { NodeProps } from "@xyflow/react";
-import {
-  Sparkles,
-  MoreHorizontal,
-  Trash,
-} from "lucide-react";
+import { Sparkles, MoreHorizontal, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -76,7 +72,11 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
       if (newContent != null) {
         updates.content = newContent;
       }
-      if (newName !== undefined && newName !== data.name && newName.trim() !== "") {
+      if (
+        newName !== undefined &&
+        newName !== data.name &&
+        newName.trim() !== ""
+      ) {
         updates.name = newName;
       }
 
@@ -114,7 +114,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
     (newContent: string) => {
       // Update local state immediately
       setPrompt(newContent);
-      
+
       // Clear any existing timeout
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
@@ -199,14 +199,13 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
   return (
     <>
       <Card
-        onDoubleClick={handleOpenFullScreenEditor}
         className={`
         min-w-[400px] max-w-[1000px]
         ${selected ? "ring-2 ring-blue-500" : ""}
         shadow-lg hover:shadow-xl transition-shadow duration-200
       `}
       >
-        <CardHeader className="">
+        <CardHeader className="h-full">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h3
@@ -216,7 +215,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
                 onBlur={handleNameBlur}
                 onClick={handleNameClick}
                 onKeyDown={handleNameKeyDown}
-                className="font-semibold text-lg cursor-text hover:bg-gray-100 rounded px-1 py-0.5 transition-colors outline-none focus:ring-1 focus:ring-blue-500"
+                className="font-semibold text-lg cursor-text hover:bg-gray-100 dark:hover:bg-gray-800 rounded px-1 py-0.5 transition-colors outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400"
                 title="Click to edit name"
               >
                 {data.name}
@@ -233,19 +232,46 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
               )}
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-[8px]">
               <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0"
+                variant="default"
+                size="lg"
+                className="bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 hover:from-violet-600 hover:via-purple-600 hover:to-fuchsia-600 text-white shadow-lg transition-all duration-300 border-0 px-6 py-2.5 !font-semibold backdrop-blur-sm animate-[heartbeat_1.5s_ease-in-out_infinite] hover:animate-none hover:scale-105 active:scale-95"
                 onClick={handleOpenFullScreenEditor}
+                style={{
+                  animationName: "heartbeat",
+                  animationDuration: "1.5s",
+                  animationTimingFunction: "ease-in-out",
+                  animationIterationCount: "infinite",
+                }}
               >
-                <Sparkles className="h-4 w-4 text-purple-500" />
+                <Sparkles className="h-4 w-4 text-white mr-2" />
+                Chat with AI
               </Button>
+
+              <style jsx>{`
+                @keyframes heartbeat {
+                  0% {
+                    transform: scale(1);
+                  }
+                  14% {
+                    transform: scale(1.03);
+                  }
+                  28% {
+                    transform: scale(1);
+                  }
+                  42% {
+                    transform: scale(1.03);
+                  }
+                  70% {
+                    transform: scale(1);
+                  }
+                }
+              `}</style>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <Button variant="ghost" size="lg" className="h-8 w-8 p-0">
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -284,7 +310,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
               }}
               placeholder="Enter your prompt here..."
               className={`
-              resize-none font-mono text-base leading-relaxed min-h-[150px] nodrag
+              resize-none font-mono text-base leading-relaxed min-h-[150px] nodrag max-h-[600px]
               p-4 bg-gray-50/50
               focus:bg-white focus:ring-2 focus:ring-blue-500/20
               transition-colors duration-200
@@ -297,11 +323,17 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
               <p className="text-xs text-gray-500 mb-[6px]">Variables: </p>
               <div className="flex items-center gap-2 max-w-[70%] flex-wrap">
                 {data?.variables &&
-                  data.variables.split(", ").map((variable: string) => (
-                    <Badge variant="outline" className="text-xs" key={variable}>
-                      {variable}
-                    </Badge>
-                  ))}
+                  data.variables
+                    .split(", ")
+                    .map((variable: string, index: number) => (
+                      <Badge
+                        variant="outline"
+                        className="text-xs"
+                        key={variable + index}
+                      >
+                        {variable}
+                      </Badge>
+                    ))}
               </div>
             </div>
             <div className="text-xs text-gray-500">

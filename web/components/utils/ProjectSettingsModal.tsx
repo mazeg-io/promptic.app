@@ -64,7 +64,7 @@ function ProjectSettingsModal({ isOpen, onClose }: ProjectSettingsModalProps) {
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent
           showCloseButton={false}
-          className="!max-w-[800px] max-h-[85vh] h-full !gap-0 !p-0 overflow-hidden bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 border-0 shadow-2xl"
+          className="!max-w-[800px] max-h-[85vh]  !gap-0 !p-0 overflow-hidden bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 border-0 shadow-2xl"
         >
           {/* Header Section */}
           <ProjectHeader
@@ -98,9 +98,6 @@ function ProjectSettingsModal({ isOpen, onClose }: ProjectSettingsModalProps) {
               onClose={onClose}
             />
           </div>
-
-          {/* Footer */}
-          <ProjectFooter />
         </DialogContent>
       </Dialog>
     </>

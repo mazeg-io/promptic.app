@@ -1,10 +1,6 @@
 "use client";
 
-import React, {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ReactFlow,
   Background,
@@ -15,7 +11,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-import { FlowToolbar } from "./toolbar/FlowToolbar";
+import { LeftToolbar } from "./toolbar/LeftToolbar";
 import { nodeTypes } from "./nodes/node.types";
 import { useNodeHelpers } from "./helpers/useNodeHelpers";
 import { useGlobal } from "@/lib/context/GlobalContext";
@@ -25,6 +21,7 @@ import { usePresence } from "./helpers/usePresence";
 import LiveComment from "./LiveComment";
 import { FullScreenPromptEditor } from "../promptEditor/FullScreenPromptEditor";
 import BottomMenu from "./bottomMenu/BottomMenu";
+import { RightToolbar } from "./toolbar/RightToolbar";
 
 export interface EditingPrompt {
   id: string;
@@ -120,7 +117,8 @@ const FlowCanvasInner: React.FC = () => {
       <div className="flex-1 relative">
         {room && (
           <>
-            <FlowToolbar room={room} />
+            <LeftToolbar room={room} />
+            <RightToolbar room={room} />
             <BottomMenu
               room={room}
               interactionMode={interactionMode}
@@ -137,7 +135,7 @@ const FlowCanvasInner: React.FC = () => {
                 panOnDrag={interactionMode === "hand"}
                 panActivationKeyCode="Space"
                 panOnScroll={interactionMode === "hand"}
-                zoomOnScroll={false}
+                preventScrolling={false}
                 onDelete={async (deleteCompononets) => {
                   for (const node of deleteCompononets.nodes) {
                     await db.transact([db.tx.prompts[node.id].delete()]);

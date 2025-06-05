@@ -83,12 +83,9 @@ function LiveComment({
     // Remove capture phase to let textarea handle the event first
     document.addEventListener("keydown", handleKeyDown);
 
-    console.log("Event listeners added"); // Debug log
-
     // Cleanup
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      console.log("Event listeners removed"); // Debug log
     };
   }, [setIsLiveCommenting, setLiveCommentText]);
 

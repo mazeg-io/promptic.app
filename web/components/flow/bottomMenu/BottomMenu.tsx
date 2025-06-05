@@ -18,8 +18,8 @@ function BottomMenu({
   handleCreatePromptNode,
 }: BottomMenuProps) {
   return (
-    <div className="absolute bottom-[12px] left-[50%] -translate-x-1/2 z-[50] flex  border-gray-300 bg-white dark:bg-gray-800 rounded-lg shadow-lg border max-h-[80px]">
-      <div className="flex flex-col border-r border-gray-300">
+    <div className="absolute bottom-[12px] left-[50%] -translate-x-1/2 z-[50] flex  border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg shadow-lg border max-h-[80px]">
+      <div className="flex flex-col border-r border-gray-300 dark:border-gray-600">
         <div
           className={`flex items-center justify-center w-[44px] h-[40px] rounded-tl-lg cursor-pointer transition-colors ${
             interactionMode === "pointer"
@@ -30,7 +30,9 @@ function BottomMenu({
         >
           <MousePointer2
             className={`w-[24px] h-[24px] ${
-              interactionMode === "pointer" ? "text-white" : "text-gray-600"
+              interactionMode === "pointer"
+                ? "text-white"
+                : "text-gray-600 dark:text-gray-300"
             }`}
             strokeWidth={1}
           />
@@ -45,14 +47,16 @@ function BottomMenu({
         >
           <Hand
             className={`w-[24px] h-[24px] ${
-              interactionMode === "hand" ? "text-white" : "text-gray-600"
+              interactionMode === "hand"
+                ? "text-white"
+                : "text-gray-600 dark:text-gray-300"
             }`}
             strokeWidth={1}
           />
         </div>
       </div>
       <div className={`group max-w-[144px] w-full`}>
-        <div className="flex items-center px-[12px] h-full border-r border-gray-300 cursor-pointer">
+        <div className="flex items-center px-[12px] h-full border-r border-gray-300 dark:border-gray-600 cursor-pointer">
           <img
             onClick={handleCreatePromptNode}
             src={createPromptIllustration.src}

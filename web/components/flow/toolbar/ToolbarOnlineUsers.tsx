@@ -1,4 +1,4 @@
-import React, {  useMemo, memo } from "react";
+import React, { useMemo, memo, useState } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import {
   Tooltip,
@@ -6,6 +6,9 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { db } from "@/instant";
+import { UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import UserManagementModal from "@/components/utils/UserManagementModal";
 
 interface ToolbarOnlineUsersProps {
   room?: any;
@@ -84,43 +87,65 @@ export const ToolbarOnlineUsers = ({ room }: ToolbarOnlineUsersProps) => {
   );
 
   const showLoadingState = room && allUsers.length === 0;
-
+  const [isUserManagementModalOpen, setIsUserManagementModalOpen] =
+    useState(false);
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex items-center gap-[2px]">
-        {showLoadingState ? (
-          <div className="text-xs text-yellow-600 px-2 py-1 bg-yellow-50 rounded">
-            Loading...
-          </div>
-        ) : null}
+    <>
+      {isUserManagementModalOpen && (
+        <UserManagementModal
+          isOpen={isUserManagementModalOpen}
+          onClose={() => setIsUserManagementModalOpen(false)}
+        />
+      )}
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-[2px]">
+          {showLoadingState ? (
+            <div className="text-xs text-yellow-600 px-2 py-1 bg-yellow-50 rounded">
+              Loading...
+            </div>
+          ) : null}
 
-        {/* Show first 4 users */}
-        {visibleUsers.map((userInfo) => (
-          <UserAvatar
-            key={userInfo.id}
-            user={userInfo.user}
-            isCurrentUser={userInfo.isCurrentUser}
-          />
-        ))}
+          {/* Show first 4 users */}
+          {visibleUsers.map((userInfo) => (
+            <UserAvatar
+              key={userInfo.id}
+              user={userInfo.user}
+              isCurrentUser={userInfo.isCurrentUser}
+            />
+          ))}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full ml-2"
+                onClick={() => setIsUserManagementModalOpen(true)}
+              >
+                <UserPlus className="w-4 h-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Invite user</TooltipContent>
+          </Tooltip>
 
-        {/* Show count if more than 4 users */}
-        {overflowCount > 0 && (
-          <div className="flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-xs font-medium">
-            +{overflowCount}
-          </div>
-        )}
+          {/* Show count if more than 4 users */}
+          {overflowCount > 0 && (
+            <div className="flex items-center justify-center w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full text-xs font-medium">
+              +{overflowCount}
+            </div>
+          )}
 
-        {/* Show online indicator */}
-        {room && onlineCount > 0 && (
-          <div className="flex items-center gap-1 ml-2 px-2 py-1 bg-green-100 dark:bg-green-900 rounded-full">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-xs text-green-700 dark:text-green-300 font-medium">
-              {onlineCount}
-            </span>
-          </div>
-        )}
+          {/* Show online indicator */}
+          {room && onlineCount > 0 && (
+            <div className="flex items-center gap-1 ml-2 px-2 py-1 bg-green-100 dark:bg-green-900 rounded-full">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-green-700 dark:text-green-300 font-medium">
+                {onlineCount}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

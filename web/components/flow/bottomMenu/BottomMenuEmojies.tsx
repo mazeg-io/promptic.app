@@ -113,7 +113,7 @@ export const BottomMenuEmojies = ({ room }: { room: any }) => {
         <div
           key={name}
           ref={emojiRefsRef.current[name]}
-          className="relative cursor-pointer bg-gray-50 shadow-lg text-2xl w-[48px] h-[48px] flex items-center justify-center border border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+          className="relative cursor-pointer bg-gray-50 dark:bg-gray-800 shadow-lg text-2xl w-[48px] h-[48px] flex items-center justify-center border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
           title={`Send ${emoji} reaction`}
           onClick={() => handleEmojiClick(name, emoji)}
         >
