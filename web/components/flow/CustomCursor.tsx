@@ -86,7 +86,7 @@ export const CustomCursor = ({
   const reactFlowInstance = useReactFlow();
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1000]">
       {Object.entries(peers).map(([peerId, presence]) => {
         if (!presence.flowX || !presence.flowY) return null;
 
