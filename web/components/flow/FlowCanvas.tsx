@@ -16,7 +16,6 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { FlowToolbar } from "./toolbar/FlowToolbar";
-import { FlowSidebar } from "./sidebar/FlowSidebar";
 import { nodeTypes } from "./nodes/node.types";
 import { useNodeHelpers } from "./helpers/useNodeHelpers";
 import { useGlobal } from "@/lib/context/GlobalContext";
@@ -25,6 +24,7 @@ import { CustomCursor } from "./CustomCursor";
 import { usePresence } from "./helpers/usePresence";
 import LiveComment from "./LiveComment";
 import { FullScreenPromptEditor } from "../promptEditor/FullScreenPromptEditor";
+import BottomMenu from "./bottomMenu/BottomMenu";
 
 export interface EditingPrompt {
   id: string;
@@ -42,10 +42,15 @@ const FlowCanvasInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [isLiveCommenting, setIsLiveCommenting] = useState(false);
+  const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] =
+    useState(false);
   const [liveCommentText, setLiveCommentText] = useState("");
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [editingPrompt, setEditingPrompt] = useState<EditingPrompt | null>(
     null
+  );
+  const [interactionMode, setInteractionMode] = useState<"pointer" | "hand">(
+    "pointer"
   );
   const { handleCreatePromptNode, focusNode, handleNodesChange } =
     useNodeHelpers({ setNodes, nodes, onNodesChange });
@@ -105,11 +110,6 @@ const FlowCanvasInner: React.FC = () => {
 
   return (
     <div className="flex h-full w-full">
-      <FlowSidebar
-        handleCreatePromptNode={handleCreatePromptNode}
-        nodes={nodes}
-        focusNode={focusNode}
-      />
       {editingPrompt && (
         <FullScreenPromptEditor
           isOpen={!!editingPrompt}
@@ -121,6 +121,12 @@ const FlowCanvasInner: React.FC = () => {
         {room && (
           <>
             <FlowToolbar room={room} />
+            <BottomMenu
+              room={room}
+              interactionMode={interactionMode}
+              setInteractionMode={setInteractionMode}
+              handleCreatePromptNode={handleCreatePromptNode}
+            />
             <div className="relative h-full w-full" ref={reactFlowWrapper}>
               <ReactFlow
                 nodes={nodes}
@@ -128,11 +134,19 @@ const FlowCanvasInner: React.FC = () => {
                 nodeTypes={nodeTypes}
                 fitView
                 className="bg-gray-50 dark:bg-gray-900"
-                panOnDrag={false}
+                panOnDrag={interactionMode === "hand"}
                 panActivationKeyCode="Space"
-                panOnScroll={true}
+                panOnScroll={interactionMode === "hand"}
                 zoomOnScroll={false}
+                onDelete={async (deleteCompononets) => {
+                  for (const node of deleteCompononets.nodes) {
+                    await db.transact([db.tx.prompts[node.id].delete()]);
+                  }
+                }}
                 zoomActivationKeyCode="Meta"
+                nodesDraggable={interactionMode === "pointer"}
+                nodesConnectable={interactionMode === "pointer"}
+                elementsSelectable={interactionMode === "pointer"}
               >
                 <Background />
                 <Controls />

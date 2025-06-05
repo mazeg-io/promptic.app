@@ -87,7 +87,7 @@ export const ToolbarOnlineUsers = ({ room }: ToolbarOnlineUsersProps) => {
 
   return (
     <div className="flex items-center gap-2">
-      <div className="flex items-center gap-[4px]">
+      <div className="flex items-center gap-[2px]">
         {showLoadingState ? (
           <div className="text-xs text-yellow-600 px-2 py-1 bg-yellow-50 rounded">
             Loading...
@@ -115,7 +115,7 @@ export const ToolbarOnlineUsers = ({ room }: ToolbarOnlineUsersProps) => {
           <div className="flex items-center gap-1 ml-2 px-2 py-1 bg-green-100 dark:bg-green-900 rounded-full">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span className="text-xs text-green-700 dark:text-green-300 font-medium">
-              {onlineCount} online
+              {onlineCount}
             </span>
           </div>
         )}

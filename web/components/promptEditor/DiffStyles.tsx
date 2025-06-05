@@ -62,7 +62,7 @@ export const renderContent = ({
     return (
       <div className="w-full h-full overflow-auto flex">
         {/* Diff line numbers */}
-        <div className="bg-gray-50 border-r border-gray-200 px-4 py-4 text-sm text-gray-500 font-mono select-none min-w-[60px]">
+        <div className="bg-gray-50 border-r border-gray-200 px-4 py-4 text-sm text-gray-500 select-none min-w-[60px]">
           {processedDiff.map((line, index) => (
             <div
               key={index}
@@ -87,7 +87,7 @@ export const renderContent = ({
           {processedDiff.map((line, index) => (
             <div
               key={index}
-              className={`leading-6 text-sm font-mono px-4 ${getLineClasses(
+              className={`leading-6 text-sm px-4 ${getLineClasses(
                 line.type
               )} flex items-center group`}
             >
@@ -132,7 +132,7 @@ export const renderContent = ({
     return (
       <>
         {/* Line numbers */}
-        <div className="bg-gray-50 border-r border-gray-200 px-4 py-4 text-sm text-gray-500 font-mono select-none min-w-[60px]">
+        <div className="bg-gray-50 border-r border-gray-200 px-4 py-4 text-sm text-gray-500 select-none min-w-[60px]">
           {promptContent
             ? promptContent.split("\n").map((_, index) => (
                 <div key={index + 1} className="leading-6 text-right">
@@ -153,7 +153,7 @@ export const renderContent = ({
               value={promptContent || ""}
               onChange={(e) => setPromptContent(e.target.value)}
               placeholder="Enter your prompt content here..."
-              className="w-full h-full border-0 resize-none focus-visible:ring-0 focus:outline-none rounded-none bg-transparent font-mono text-sm leading-6 p-4 pr-0"
+              className="w-full h-full border-0 resize-none focus-visible:ring-0 focus:outline-none rounded-none bg-transparent text-sm leading-6 p-4 pr-0"
               style={{
                 minHeight: "100%",
                 whiteSpace: "pre",

@@ -53,7 +53,7 @@ const animateEmoji = (
   setTimeout(() => rootEl.remove(), 800);
 };
 
-export const ToolbarEmojies = ({ room }: { room: any }) => {
+export const BottomMenuEmojies = ({ room }: { room: any }) => {
   const emojiRefsRef = useRef<{
     [key: string]: React.RefObject<HTMLDivElement | null>;
   }>({});
@@ -113,7 +113,7 @@ export const ToolbarEmojies = ({ room }: { room: any }) => {
         <div
           key={name}
           ref={emojiRefsRef.current[name]}
-          className="relative cursor-pointer w-[40px] h-[40px] hover:bg-gray-100 dark:hover:bg-gray-700 rounded p-2 transition-colors"
+          className="relative cursor-pointer bg-gray-50 shadow-lg text-2xl w-[48px] h-[48px] flex items-center justify-center border border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
           title={`Send ${emoji} reaction`}
           onClick={() => handleEmojiClick(name, emoji)}
         >
@@ -124,4 +124,4 @@ export const ToolbarEmojies = ({ room }: { room: any }) => {
   );
 };
 
-export default ToolbarEmojies;
+export default BottomMenuEmojies;
