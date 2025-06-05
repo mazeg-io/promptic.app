@@ -34,6 +34,7 @@ export interface PromptNodeData extends Record<string, unknown> {
     isExpanded: boolean;
     nodeType: string;
   };
+  room: any;
 }
 
 type PromptNodeProps = NodeProps & {
@@ -50,6 +51,28 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
   const debounceTimeoutRef = useRef<NodeJS.Timeout>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
+  const {
+    user: myPresence,
+    peers,
+    publishPresence,
+  } = data?.room?.usePresence({});
+
+  // Filter peers who have the same promptId as this node
+  const peersOnThisPrompt = React.useMemo(() => {
+    if (!peers) return [];
+
+    // Handle if peers is an object with values being the peer data
+    if (typeof peers === "object" && !Array.isArray(peers)) {
+      return Object.values(peers).filter((peer: any) => peer?.promptId === id);
+    }
+
+    // Handle if peers is already an array
+    if (Array.isArray(peers)) {
+      return peers.filter((peer: any) => peer?.promptId === id);
+    }
+
+    return [];
+  }, [peers, id]);
 
   // Update local prompt when data.prompt changes
   useEffect(() => {
@@ -194,6 +217,18 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
         prompt: data.prompt,
       });
     }
+    publishPresence({
+      name: myPresence.name,
+      lastName: myPresence.lastName,
+      profilePicture: myPresence.profilePicture || undefined,
+      color: myPresence.color,
+      flowX: myPresence.flowX,
+      flowY: myPresence.flowY,
+      screenX: myPresence.screenX,
+      screenY: myPresence.screenY,
+      liveCommentText: prompt,
+      promptId: id,
+    });
   }, [id, data]);
 
   return (
@@ -229,6 +264,31 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
                 <Badge variant="outline" className="text-xs">
                   Saving...
                 </Badge>
+              )}
+
+              {/* Show profile pictures of peers on this prompt */}
+              {peersOnThisPrompt.length > 0 && (
+                <div className="flex items-center gap-1 ml-2">
+                  {peersOnThisPrompt.map((peer: any, index: number) => (
+                    <div
+                      key={peer.id || index}
+                      className="relative"
+                      title={`${peer.name || "Anonymous"} ${
+                        peer.lastName || ""
+                      } is viewing this prompt`}
+                    >
+                      {peer.profilePicture && (
+                        <img
+                          src={peer.profilePicture}
+                          alt={`${peer.name || "User"}'s profile`}
+                          className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                          style={{ borderColor: peer.color || "#ffffff" }}
+                          referrerPolicy="no-referrer"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
 

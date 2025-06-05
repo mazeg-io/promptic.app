@@ -16,6 +16,7 @@ const generateUserColor = (userId: string) => {
 
 interface PresenceData {
   name?: string;
+  lastName?: string;
   color?: string;
   profilePicture?: string;
   flowX?: number;
@@ -30,6 +31,7 @@ interface UsePresenceReturn {
   stableUserColor: string;
   isReady: boolean;
   myPresence: PresenceData;
+  publishPresence: any;
 }
 
 export const usePresence = ({
@@ -134,6 +136,7 @@ export const usePresence = ({
   }, [screenToFlowPosition, publishPresence, liveCommentText]);
 
   return {
+    publishPresence,
     peers,
     stableUserColor: stableUserColor.current || "#999999",
     isReady:

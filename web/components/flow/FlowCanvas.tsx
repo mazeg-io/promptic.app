@@ -59,10 +59,11 @@ const FlowCanvasInner: React.FC = () => {
     : db.room("project-canvas", `default-room-${crypto.randomUUID()}`);
 
   // Use the presence hook
-  const { peers, stableUserColor, isReady } = usePresence({
-    room,
-    liveCommentText,
-  });
+  const { peers, stableUserColor, isReady, myPresence, publishPresence } =
+    usePresence({
+      room,
+      liveCommentText,
+    });
 
   const { data: promptsData } = db.useQuery({
     prompts: {
@@ -94,6 +95,7 @@ const FlowCanvasInner: React.FC = () => {
             metadata: prompt.metadata,
             information: prompt.information,
             setEditingPrompt: setEditingPrompt,
+            room: room,
           },
         }))
       );
@@ -110,7 +112,21 @@ const FlowCanvasInner: React.FC = () => {
       {editingPrompt && (
         <FullScreenPromptEditor
           isOpen={!!editingPrompt}
-          onClose={() => setEditingPrompt(null)}
+          onClose={() => {
+            publishPresence({
+              name: myPresence.name,
+              lastName: myPresence.lastName,
+              profilePicture: myPresence.profilePicture || undefined,
+              color: myPresence.color,
+              flowX: myPresence.flowX,
+              flowY: myPresence.flowY,
+              screenX: myPresence.screenX,
+              screenY: myPresence.screenY,
+              liveCommentText: prompt,
+              promptId: null,
+            });
+            setEditingPrompt(null);
+          }}
           prompt={editingPrompt}
         />
       )}
