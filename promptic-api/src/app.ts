@@ -11,7 +11,6 @@ app.use(express.json());
 app.use(cors());
 
 interface PromptRequest {
-  appId: string;
   promptKey: string;
   projectKey: string;
 }
@@ -28,14 +27,14 @@ app.get("/health", (req: Request, res: Response) => {
 app.post(
   "/api/prompt",
   async (req: Request<{}, {}, PromptRequest>, res: Response) => {
-    const { promptKey } = req.body;
+    const { promptKey, projectKey } = req.body;
 
     if (!promptKey || typeof promptKey !== "string") {
       return res.status(400).json({ error: "Missing or invalid 'promptKey'" });
     }
 
     try {
-      const result = await getPromptFromInstant(promptKey);
+      const result = await getPromptFromInstant(promptKey, projectKey);
 
       if (result.error) {
         return res.status(500).json({ error: result.error });
@@ -56,7 +55,10 @@ app.post(
   }
 );
 
-async function getPromptFromInstant(promptName: string): Promise<PromptResult> {
+async function getPromptFromInstant(
+  promptName: string,
+  projectKey: string
+): Promise<PromptResult> {
   try {
     const db = init({
       appId: process.env.INSTANTDB_APP_ID || "",
@@ -67,7 +69,7 @@ async function getPromptFromInstant(promptName: string): Promise<PromptResult> {
       prompts: {
         $: {
           where: {
-            name: promptName,
+            and: [{ name: promptName }, { "project.key": projectKey }],
           },
         },
       },
