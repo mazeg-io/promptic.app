@@ -5,7 +5,7 @@ import { db } from "@/instant";
 import { useRouter, usePathname } from "next/navigation";
 import { useGlobal } from "@/lib/context/GlobalContext";
 
-const PUBLIC_ROUTES = ["/login"];
+const PUBLIC_ROUTES = ["/login", "/"];
 
 const AUTH_ROUTES = ["/login"];
 
