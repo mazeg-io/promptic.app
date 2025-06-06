@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     description: "Visual prompt flow editor with AI-powered enhancements",
     images: [
       {
-        url: "/image.png",
+        url: "/opengraph-image.png",
         width: 1200,
         height: 630,
         alt: "Promptic Flow Editor Preview",
