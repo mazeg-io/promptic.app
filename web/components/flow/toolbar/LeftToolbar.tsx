@@ -2,14 +2,7 @@
 
 import React, { useState } from "react";
 import {
-  Play,
-  Square,
-  RotateCcw,
-  Save,
-  Download,
-  Upload,
   Settings,
-  Zap,
   Layers,
   ChevronDown,
   Github,
@@ -18,7 +11,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProjectSettingsModal from "@/components/utils/ProjectSettingsModal";
-import ToolbarOnlineUsers from "./ToolbarOnlineUsers";
 import { useGlobal } from "@/lib/context/GlobalContext";
 import {
   Menubar,
@@ -26,12 +18,11 @@ import {
   MenubarItem,
   MenubarMenu,
   MenubarSeparator,
-  MenubarShortcut,
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import { db } from "@/instant";
 import DocsModal from "@/components/utils/DocsModal";
-export const LeftToolbar = ({ room }: { room: any }) => {
+export const LeftToolbar = () => {
   const { activeProject, profile, setActiveProject } = useGlobal();
   const [isProjectSettingsModalOpen, setIsProjectSettingsModalOpen] =
     useState(false);

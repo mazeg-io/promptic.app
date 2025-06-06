@@ -2,18 +2,7 @@
 
 import React, { useState } from "react";
 import {
-  Play,
-  Square,
-  RotateCcw,
-  Save,
-  Download,
-  Upload,
-  Settings,
-  Zap,
-  Layers,
-  ChevronDown,
   CloudAlert,
-  Book,
   Cable,
   Sun,
   Moon,

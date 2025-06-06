@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Hand, MousePointer2, Plus } from "lucide-react";
-import React, { useState, useRef } from "react";
+import { Hand, MousePointer2 } from "lucide-react";
+import React from "react";
 import BottomMenuEmojies from "./BottomMenuEmojies";
 import createPromptIllustration from "@/public/create_prompt.svg";
 

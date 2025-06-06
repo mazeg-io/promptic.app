@@ -39,8 +39,6 @@ const FlowCanvasInner: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [isLiveCommenting, setIsLiveCommenting] = useState(false);
-  const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] =
-    useState(false);
   const [liveCommentText, setLiveCommentText] = useState("");
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [editingPrompt, setEditingPrompt] = useState<EditingPrompt | null>(
@@ -49,7 +47,7 @@ const FlowCanvasInner: React.FC = () => {
   const [interactionMode, setInteractionMode] = useState<"pointer" | "hand">(
     "pointer"
   );
-  const { handleCreatePromptNode, focusNode, handleNodesChange } =
+  const { handleCreatePromptNode, handleNodesChange } =
     useNodeHelpers({ setNodes, nodes, onNodesChange });
   const { activeProject, profile } = useGlobal();
 
@@ -133,7 +131,7 @@ const FlowCanvasInner: React.FC = () => {
       <div className="flex-1 relative">
         {room && (
           <>
-            <LeftToolbar room={room} />
+            <LeftToolbar />
             <RightToolbar room={room} />
             <BottomMenu
               room={room}
