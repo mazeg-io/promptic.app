@@ -1,5 +1,4 @@
 import React from "react";
-import { Handle, Position } from "@xyflow/react";
 
 export const EmptyStateNode = () => {
   return (
@@ -29,8 +28,8 @@ export const EmptyStateNode = () => {
             <div className="ml-4 space-y-1 text-gray-600 dark:text-gray-400">
               <p>→ Click [ + New Project ] in the sidebar</p>
               <p>
-                → Give it a clear name (ex: "Customer Support Bot" or "AI Chat
-                Assistant")
+                → Give it a clear name (ex: &quot;Customer Support Bot&quot; or &quot;AI Chat
+                Assistant&quot;)
               </p>
             </div>
           </div>
@@ -43,8 +42,8 @@ export const EmptyStateNode = () => {
             <div className="ml-4 space-y-1 text-gray-600 dark:text-gray-400">
               <p>→ Inside your project, click [ + New Prompt ]</p>
               <p>
-                → Give it a name (ex: "System Prompt", "Planner Agent Prompt",
-                "RAG Retriever Prompt")
+                → Give it a name (ex: &quot;System Prompt&quot;, &quot;Planner Agent Prompt&quot;,
+                &quot;RAG Retriever Prompt&quot;)
               </p>
               <p>→ Start writing your prompt in the editor</p>
             </div>
@@ -74,10 +73,10 @@ export const EmptyStateNode = () => {
             <div className="ml-4 space-y-1">
               <div className="bg-gray-100 dark:bg-gray-700 rounded p-3 font-mono text-xs">
                 <div>
-                  const &#123; loadPrompt &#125; = require('@promptic/client');
+                  const &#123; loadPrompt &#125; = require(&apos;@promptic/client&apos;);
                 </div>
                 <div>
-                  const prompt = await loadPrompt('project-name/prompt-name');
+                  const prompt = await loadPrompt(&apos;project-name/prompt-name&apos;);
                 </div>
               </div>
               <div className="text-gray-600 dark:text-gray-400 space-y-1">
@@ -89,10 +88,10 @@ export const EmptyStateNode = () => {
 
           <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-600">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              🎁 That's it!
+              🎁 That&apos;s it!
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              You're ready to start building better AI together. 🚀
+              You&apos;re ready to start building better AI together. 🚀
             </p>
           </div>
         </div>
