@@ -10,6 +10,24 @@ import Footer from "@/components/ui/Footer";
 export const metadata: Metadata = {
   title: "Flow Editor | Promptic",
   description: "Visual prompt flow editor with AI-powered enhancements",
+  openGraph: {
+    title: "Flow Editor | Promptic",
+    description: "Visual prompt flow editor with AI-powered enhancements",
+    images: [
+      {
+        url: "/image.png",
+        width: 1200,
+        height: 630,
+        alt: "Promptic Flow Editor Preview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Flow Editor | Promptic",
+    description: "Visual prompt flow editor with AI-powered enhancements",
+    images: ["/image.png"],
+  },
 };
 
 export default function Home() {
