@@ -33,6 +33,7 @@ This repository contains three main components:
                                              │
                                       ┌─────────────┐
                                       │             │
+                                      │  Promptic   │
                                       │     Web     │
                                       │ Application │
                                       │             │
