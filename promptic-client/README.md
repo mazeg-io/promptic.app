@@ -1,6 +1,21 @@
 # Promptic Client
 
-A lightweight JavaScript/TypeScript client for interacting with the Promptic API. This client allows you to easily retrieve and format prompts stored in your Promptic application.
+A lightweight JavaScript/TypeScript client for integrating Promptic prompts into your applications.
+
+## Overview
+
+Promptic Client provides a simple yet powerful way to access and format prompts stored in your Promptic workspace through the promptic-api:
+
+- **API Integration** - Seamlessly communicates with the promptic-api to retrieve your prompts
+- **Simple Interface** - Minimal, intuitive methods for retrieving and formatting prompts
+- **TypeScript Support** - Full type definitions for improved developer experience
+- **Error Handling** - Robust error handling for missing variables and network issues
+
+## Features
+
+- **Prompt Retrieval** - Fetch prompts by key from your Promptic workspace
+- **Variable Formatting** - Replace placeholder variables with dynamic values
+- **Promise-based API** - Modern async/await compatible interface
 
 ## Installation
 
@@ -21,7 +36,8 @@ import { PrompticClient } from "promptic-client";
 
 // Initialize the client with your Promptic base URL
 const client = new PrompticClient({
-  baseUrl: "https://your-promptic-api-url.com",
+  baseUrl: "promptic-api-url",
+  projectKey: "promptic-project-key",
 });
 
 // Basic usage
@@ -121,4 +137,8 @@ MIT
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please refer to the main [Contributing Guidelines](../CONTRIBUTING.md) for more details.
+
+---
+
+Built with ❤️ by [Mazeg](https://mazeg.com)

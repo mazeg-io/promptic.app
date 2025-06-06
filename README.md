@@ -20,6 +20,39 @@ This repository contains three main components:
 - [`/promptic-api`](./promptic-api) - REST API for accessing and managing prompts
 - [`/promptic-client`](./promptic-client) - NPM library for easy prompt integration
 
+## Architecture
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│             │     │             │     │             │
+│  Promptic   │ ──► │  Promptic   │ ──► │  InstantDB  │
+│   Client    │     │     API     │     │             │
+│             │     │             │     │             │
+└─────────────┘     └─────────────┘     └─────────────┘
+                                             ▲
+                                             │
+                                      ┌─────────────┐
+                                      │             │
+                                      │     Web     │
+                                      │ Application │
+                                      │             │
+                                      └─────────────┘
+```
+
+The Promptic system uses the following architecture:
+
+- **Promptic Client** connects to the Promptic API to access prompts
+- **Promptic API** serves as the intermediary between the client and InstantDB
+- **Web Application** connects directly to InstantDB without going through the API
+- **InstantDB** stores all prompt data with real-time capabilities
+
+## Key Technologies
+
+- **[InstantDB](https://www.instantdb.com/)** - Powers real-time collaboration in the canvas editor
+- **React & TypeScript** - Frontend development
+- **Node.js** - Backend API
+- **OpenAI** - LLM integration for prompt refinement
+
 ## Demo
 
 [![Promptic Demo](https://cdn.loom.com/sessions/thumbnails/199a0e490fa2462f820526026521de2e-with-play.gif)](https://www.loom.com/share/199a0e490fa2462f820526026521de2e?sid=ec6f4973-67f8-4be1-bffd-18fc49eeecdb)
@@ -27,17 +60,20 @@ _Click to watch a quick demo of Promptic in action_
 
 ## Quick Start
 
-```javascript
-import { Promptic } from "promptic-client";
+```bash
+npm install promptic-client
+```
 
-// Initialize client
-const promptic = new Promptic({
-  apiKey: "your-api-key",
-  baseUrl: "promptic-api-url",
+```javascript
+import { PrompticClient } from "promptic-client";
+
+// Initialize the client with your Promptic base URL
+const client = new PrompticClient({
+  baseUrl: "promptic-api-base-url",
+  projectKey: "promptic-project-key",
 });
 
-// Fetch a prompt
-const prompt = await promptic.getPrompt("prompt-id");
+const prompt = await client.getPrompt("your-prompt-key");
 ```
 
 For detailed setup instructions for each component, please refer to their respective documentation.
