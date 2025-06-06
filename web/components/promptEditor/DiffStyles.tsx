@@ -48,6 +48,7 @@ interface RenderContentProps {
   setPromptContent: (content: string) => void;
   handleAcceptLine: (index: number) => void;
   handleRejectLine: (index: number) => void;
+  handlePromptChange: (content: string) => void;
 }
 
 export const renderContent = ({
@@ -55,6 +56,7 @@ export const renderContent = ({
   processedDiff,
   promptContent,
   setPromptContent,
+  handlePromptChange,
   handleAcceptLine,
   handleRejectLine,
 }: RenderContentProps) => {

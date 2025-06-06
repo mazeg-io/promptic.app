@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import ChatSidebar from "@/components/promptEditor/ChatSidebar/ChatSidebar";
 import { EditingPrompt } from "../flow/FlowCanvas";
 import type { Change } from "diff";
@@ -9,6 +9,7 @@ import { renderContent } from "./DiffStyles";
 import { useDiffFunctions } from "./helpers/useDiffFunctions";
 import { useResizableSidebar } from "./helpers/useResizableSidebar";
 import { Button } from "@/components/ui/button";
+import { db } from "@/instant";
 
 export interface ProcessedLine {
   type: "added" | "removed" | "unchanged";
@@ -33,6 +34,7 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
   const [isDiffMode, setIsDiffMode] = useState(false);
   const [originalContent, setOriginalContent] = useState<string>("");
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Resizable sidebar hook
   const { sidebarWidth, isResizing, startResize } = useResizableSidebar({
@@ -92,6 +94,68 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
     setOriginalContent,
   });
 
+  const extractVariables = useCallback((prompt: string) => {
+    const variables = prompt.match(/{{.*?}}/g);
+    return variables
+      ?.map((variable) => variable.replace(/{{|}}/g, ""))
+      .join(", ");
+  }, []);
+
+  const updatePromptInDB = useCallback(
+    async (newContent?: string, newName?: string) => {
+      if (!prompt.id) return;
+
+      const updates: Record<string, unknown> = {};
+      if (newContent != null) {
+        updates.content = newContent;
+      }
+
+      if (Object.keys(updates).length === 0) return;
+
+      try {
+        await db.transact([
+          db.tx.prompts[prompt.id].update({
+            ...updates,
+            variables: extractVariables(newContent || ""),
+            updatedAt: Date.now(),
+          }),
+        ]);
+      } catch (error) {
+        console.error("Failed to update prompt:", error);
+      }
+    },
+    [prompt.id, extractVariables]
+  );
+
+  // Handle prompt content changes with debouncing
+  const handlePromptChange = useCallback(
+    (newContent: string) => {
+      // Clear any existing timeout
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+
+      // Set a new timeout for database update
+      debounceTimeoutRef.current = setTimeout(() => {
+        updatePromptInDB(newContent);
+      }, 500); // 500ms debounce
+    },
+    [updatePromptInDB]
+  );
+
+  useEffect(() => {
+    handlePromptChange(promptContent ?? "");
+  }, [promptContent]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Calculate main content width based on sidebar width and animation phase
   const mainContentWidth =
     animationPhase === "open" ? `calc(100% - ${sidebarWidth}px)` : "100%";
@@ -136,6 +200,7 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
           promptContent: promptContent ?? "",
           setPromptContent,
           handleAcceptLine,
+          handlePromptChange,
           handleRejectLine,
         })}
       </div>
