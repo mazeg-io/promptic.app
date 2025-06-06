@@ -108,7 +108,9 @@ export const LeftToolbar = () => {
                 <span className="dark:text-gray-300">Contribute</span>
               </MenubarItem>
               <MenubarSeparator />
-              <MenubarItem className="text-red-600 dark:text-red-400">
+              <MenubarItem className="text-red-600 dark:text-red-400" onClick={() => {
+                db.auth.signOut();
+              }}>
                 <span>Logout</span>
               </MenubarItem>
             </MenubarContent>
