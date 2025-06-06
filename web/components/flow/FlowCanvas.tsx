@@ -47,8 +47,11 @@ const FlowCanvasInner: React.FC = () => {
   const [interactionMode, setInteractionMode] = useState<"pointer" | "hand">(
     "pointer"
   );
-  const { handleCreatePromptNode, handleNodesChange } =
-    useNodeHelpers({ setNodes, nodes, onNodesChange });
+  const { handleCreatePromptNode, handleNodesChange } = useNodeHelpers({
+    setNodes,
+    nodes,
+    onNodesChange,
+  });
   const { activeProject, profile } = useGlobal();
 
   // Create a room for the current project, with fallback to prevent null
@@ -78,25 +81,41 @@ const FlowCanvasInner: React.FC = () => {
   // Add prompt nodes to the canvas based on updates from the database
   useEffect(() => {
     if (promptsData?.prompts) {
-      setNodes(
-        promptsData.prompts.map((prompt) => ({
-          id: prompt.id,
-          type: "promptNode",
-          position: {
-            x: prompt.information?.positionX || 100,
-            y: prompt.information?.positionY || 100,
+      // If there are prompts, show them
+      if (promptsData.prompts.length > 0) {
+        setNodes(
+          promptsData.prompts.map((prompt) => ({
+            id: prompt.id,
+            type: "promptNode",
+            position: {
+              x: prompt.information?.positionX || 100,
+              y: prompt.information?.positionY || 100,
+            },
+            data: {
+              name: prompt.name,
+              prompt: prompt.content,
+              variables: prompt.variables,
+              metadata: prompt.metadata,
+              information: prompt.information,
+              setEditingPrompt: setEditingPrompt,
+              room: room,
+            },
+          }))
+        );
+      } else {
+        // If no prompts, show empty state node
+        setNodes([
+          {
+            id: "empty-state",
+            type: "emptyStateNode",
+            position: { x: 100, y: 100 },
+            data: {},
+            draggable: false,
+            selectable: false,
+            deletable: false,
           },
-          data: {
-            name: prompt.name,
-            prompt: prompt.content,
-            variables: prompt.variables,
-            metadata: prompt.metadata,
-            information: prompt.information,
-            setEditingPrompt: setEditingPrompt,
-            room: room,
-          },
-        }))
-      );
+        ]);
+      }
     }
   }, [promptsData, setNodes]);
 
