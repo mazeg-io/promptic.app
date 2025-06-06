@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Bot, Loader2, Send, X } from "lucide-react";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect } from "react";
 import AIMessage from "./AIMessage";
 import UserMessage from "./UserMessage";
-import { Input } from "@/components/ui/input";
 import { useChat } from "@ai-sdk/react";
 import { promptic_system_prompt } from "./prompts/promptic_system_prompt";
 

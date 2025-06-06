@@ -4,7 +4,6 @@ import { Dialog, DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import TeamManagementSection from "../projectSettings/TeamManagementSection";
 import { db } from "@/instant";
 import { useGlobal } from "@/lib/context/GlobalContext";
-import { UserPlus } from "lucide-react";
 
 function UserManagementModal({
   isOpen,
@@ -13,7 +12,7 @@ function UserManagementModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const { profile, activeProject, setActiveProject } = useGlobal();
+  const { profile, activeProject } = useGlobal();
 
   const { data: projectData, isLoading: loadingUsers } = db.useQuery(
     activeProject?.id

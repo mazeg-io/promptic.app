@@ -7,7 +7,6 @@ import ProjectHeader from "@/components/projectSettings/ProjectHeader";
 import GeneralInformationSection from "@/components/projectSettings/GeneralInformationSection";
 import TeamManagementSection from "@/components/projectSettings/TeamManagementSection";
 import DangerZoneSection from "@/components/projectSettings/DangerZoneSection";
-import ProjectFooter from "@/components/projectSettings/ProjectFooter";
 
 interface ProjectSettingsModalProps {
   isOpen: boolean;

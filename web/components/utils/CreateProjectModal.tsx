@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import {
   Dialog,
@@ -11,9 +9,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { FolderPlus, Layers, Search } from "lucide-react";
+import { FolderPlus } from "lucide-react";
 import { Button } from "../ui/button";
 import { db } from "@/instant";
 import { useGlobal } from "@/lib/context/GlobalContext";

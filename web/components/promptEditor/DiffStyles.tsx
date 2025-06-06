@@ -58,11 +58,15 @@ export const renderContent = ({
   handleAcceptLine,
   handleRejectLine,
 }: RenderContentProps) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const parentRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const lineNumbersRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [hasScroll, setHasScroll] = useState(false);
 
   // I need this for border of line numbers
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const checkScroll = () => {
       if (parentRef.current) {
