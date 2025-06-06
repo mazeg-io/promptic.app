@@ -20,29 +20,12 @@ This repository contains three main components:
 - [`/promptic-api`](./promptic-api) - REST API for accessing and managing prompts
 - [`/promptic-client`](./promptic-client) - NPM library for easy prompt integration
 
+## Demo
+
+[![Promptic Demo](https://cdn.loom.com/sessions/thumbnails/199a0e490fa2462f820526026521de2e-with-play.gif)](https://www.loom.com/share/199a0e490fa2462f820526026521de2e?sid=ec6f4973-67f8-4be1-bffd-18fc49eeecdb)
+_Click to watch a quick demo of Promptic in action_
+
 ## Quick Start
-
-### Web Canvas
-
-```bash
-cd web
-npm install
-npm run dev
-```
-
-### API
-
-```bash
-cd promptic-api
-npm install
-npm run dev
-```
-
-### Client Library
-
-```bash
-npm install promptic-client
-```
 
 ```javascript
 import { Promptic } from "promptic-client";
@@ -56,6 +39,8 @@ const promptic = new Promptic({
 // Fetch a prompt
 const prompt = await promptic.getPrompt("prompt-id");
 ```
+
+For detailed setup instructions for each component, please refer to their respective documentation.
 
 ## Documentation
 
