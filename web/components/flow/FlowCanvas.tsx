@@ -167,7 +167,7 @@ const FlowCanvasInner: React.FC = () => {
                 className="bg-gray-50 dark:bg-gray-900"
                 panOnDrag={interactionMode === "hand"}
                 panActivationKeyCode="Space"
-                panOnScroll={interactionMode === "hand"}
+                panOnScroll={true}
                 preventScrolling={false}
                 onDelete={async (deleteCompononets) => {
                   for (const node of deleteCompononets.nodes) {
