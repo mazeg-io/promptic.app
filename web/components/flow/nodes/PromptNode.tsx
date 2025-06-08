@@ -218,7 +218,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
       });
     }
     publishPresence({
-      name: myPresence.name,
+      name: myPresence?.name,
       lastName: myPresence.lastName,
       profilePicture: myPresence.profilePicture || undefined,
       color: myPresence.color,
