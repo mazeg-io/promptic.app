@@ -60,9 +60,9 @@ export const LeftToolbar = () => {
           <MenubarMenu>
             <MenubarTrigger
               asChild
-              className="border-0 !bg-transparent hover:!bg-gray-600"
+              className="border-0 !bg-transparent hover:!bg-gray-700/20"
             >
-              <div className="flex items-center gap-[4px] h-[36px] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md  px-[8px]  p-2">
+              <div className="flex items-center gap-[4px] h-[36px] hover:bg-gray-100 dark:hover:bg-gray-800/30 rounded-md  px-[8px]  p-2">
                 <Layers className="text-gray-600 dark:text-white w-[18px] h-[18px]" />
                 <ChevronDown className="text-gray-600 dark:text-gray-400 w-[12px] h-[12px]" />
               </div>
@@ -108,9 +108,12 @@ export const LeftToolbar = () => {
                 <span className="dark:text-gray-300">Contribute</span>
               </MenubarItem>
               <MenubarSeparator />
-              <MenubarItem className="text-red-600 dark:text-red-400" onClick={() => {
-                db.auth.signOut();
-              }}>
+              <MenubarItem
+                className="text-red-600 dark:text-red-400"
+                onClick={() => {
+                  db.auth.signOut();
+                }}
+              >
                 <span>Logout</span>
               </MenubarItem>
             </MenubarContent>
@@ -118,7 +121,7 @@ export const LeftToolbar = () => {
         </Menubar>
 
         <div className="h-full flex items-center">
-          <p className="text-gray-800 dark:text-gray-200 text-xs h-[calc(100%-16px)] font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md px-[8px] flex items-center">
+          <p className="text-gray-800 dark:text-gray-200 text-xs h-[calc(100%-16px)] font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md px-[8px] flex items-center transition-colors duration-150">
             {activeProject?.name}
           </p>
         </div>

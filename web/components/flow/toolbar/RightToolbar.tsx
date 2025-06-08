@@ -1,12 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  CloudAlert,
-  Cable,
-  Sun,
-  Moon,
-} from "lucide-react";
+import { CloudAlert, Cable, Sun, Moon, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProjectSettingsModal from "@/components/utils/ProjectSettingsModal";
 import ToolbarOnlineUsers from "./ToolbarOnlineUsers";
@@ -24,6 +19,15 @@ export const RightToolbar = ({ room }: { room: any }) => {
   const [isProjectSettingsModalOpen, setIsProjectSettingsModalOpen] =
     useState(false);
   const [isDocsModalOpen, setIsDocsModalOpen] = useState(false);
+  const [isPublished, setIsPublished] = useState(false);
+
+  const handlePublish = () => {
+    setIsPublished(true);
+    setTimeout(() => {
+      setIsPublished(false);
+    }, 2000);
+  };
+
   return (
     <>
       {isProjectSettingsModalOpen && (
@@ -77,10 +81,20 @@ export const RightToolbar = ({ room }: { room: any }) => {
             <Button
               variant="default"
               size="lg"
-              className="flex items-center gap-2 bg-purple-600 text-white hover:bg-purple-700"
+              className={cn(
+                "flex items-center gap-2 transition-colors duration-200",
+                isPublished
+                  ? "bg-green-600 text-white hover:bg-green-700"
+                  : "bg-purple-600 text-white hover:bg-purple-700"
+              )}
+              onClick={handlePublish}
             >
-              <CloudAlert className="w-4 h-4" />
-              Publish
+              {isPublished ? (
+                <Check className="w-4 h-4" />
+              ) : (
+                <CloudAlert className="w-4 h-4" />
+              )}
+              {isPublished ? "Published" : "Publish"}
             </Button>
           </TooltipTrigger>
           <TooltipContent>Sync prompts with api</TooltipContent>

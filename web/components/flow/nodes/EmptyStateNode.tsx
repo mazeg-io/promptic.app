@@ -1,4 +1,9 @@
 import React from "react";
+import { CodeSnippet } from "@/components/ui/CodeSnippet";
+import {
+  CLIENT_INSTALL_CODE,
+  CLIENT_USAGE_CODE,
+} from "@/constants/codeSnippets";
 
 export const EmptyStateNode = () => {
   return (
@@ -28,8 +33,8 @@ export const EmptyStateNode = () => {
             <div className="ml-4 space-y-1 text-gray-600 dark:text-gray-400">
               <p>→ Click [ + New Project ] in the sidebar</p>
               <p>
-                → Give it a clear name (ex: &quot;Customer Support Bot&quot; or &quot;AI Chat
-                Assistant&quot;)
+                → Give it a clear name (ex: &quot;Customer Support Bot&quot; or
+                &quot;AI Chat Assistant&quot;)
               </p>
             </div>
           </div>
@@ -42,8 +47,8 @@ export const EmptyStateNode = () => {
             <div className="ml-4 space-y-1 text-gray-600 dark:text-gray-400">
               <p>→ Inside your project, click [ + New Prompt ]</p>
               <p>
-                → Give it a name (ex: &quot;System Prompt&quot;, &quot;Planner Agent Prompt&quot;,
-                &quot;RAG Retriever Prompt&quot;)
+                → Give it a name (ex: &quot;System Prompt&quot;, &quot;Planner
+                Agent Prompt&quot;, &quot;RAG Retriever Prompt&quot;)
               </p>
               <p>→ Start writing your prompt in the editor</p>
             </div>
@@ -68,21 +73,24 @@ export const EmptyStateNode = () => {
               ✅ Step 4 — Connect Your App
             </h3>
             <p className="mb-2">
-              Use @promptic/client to load prompts dynamically.
+              Use our simple client to connect your app to your prompts.
             </p>
-            <div className="ml-4 space-y-1">
-              <div className="bg-gray-100 dark:bg-gray-700 rounded p-3 font-mono text-xs">
-                <div>
-                  const &#123; loadPrompt &#125; = require(&apos;@promptic/client&apos;);
-                </div>
-                <div>
-                  const prompt = await loadPrompt(&apos;project-name/prompt-name&apos;);
-                </div>
-              </div>
-              <div className="text-gray-600 dark:text-gray-400 space-y-1">
-                <p>→ Your app always gets the latest version of the prompt</p>
-                <p>→ No redeploy needed</p>
-              </div>
+            <div className="ml-4 space-y-1 text-gray-600 dark:text-gray-400">
+              <p>→ Install the client:</p>
+              <CodeSnippet
+                code={CLIENT_INSTALL_CODE}
+                language="bash"
+                id="install"
+              />
+              <p>→ Connect to your project:</p>
+              <CodeSnippet
+                code={CLIENT_USAGE_CODE}
+                language="javascript"
+                id="usage"
+              />
+              <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                Note: Get your project key from the Settings tab
+              </p>
             </div>
           </div>
 

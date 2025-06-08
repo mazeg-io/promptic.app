@@ -1,5 +1,6 @@
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { ClientDoc } from "../docs/ClientDoc";
 
 function DocsModal({
   isOpen,
@@ -10,15 +11,12 @@ function DocsModal({
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Docs</DialogTitle>
+          <DialogTitle>API Documentation</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-lg font-medium">Docs</h2>
-            <p className="text-sm text-gray-500">Docs for the project</p>
-          </div>
+        <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto pr-2">
+          <ClientDoc />
         </div>
       </DialogContent>
     </Dialog>
