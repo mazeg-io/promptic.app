@@ -21,5 +21,5 @@ const client = new PrompticClient({
   projectKey: "${projectKey}",
 });
 
-const prompt = await client.getPrompt("your-prompt-key");`;
+const prompt = await client.getPrompt("your-prompt-key").format({});`;
 };
