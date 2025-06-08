@@ -56,7 +56,6 @@ export const renderContent = ({
   processedDiff,
   promptContent,
   setPromptContent,
-  handlePromptChange,
   handleAcceptLine,
   handleRejectLine,
 }: RenderContentProps) => {

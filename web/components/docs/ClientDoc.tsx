@@ -49,8 +49,8 @@ export const ClientDoc: React.FC = () => {
           />
           {!activeProject?.key && (
             <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
-              Note: Replace "YOUR_PROJECT_KEY" with your actual project key from
-              Settings.
+              Note: Replace &quot;YOUR_PROJECT_KEY&quot; with your actual
+              project key from Settings.
             </p>
           )}
         </div>

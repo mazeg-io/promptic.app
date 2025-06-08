@@ -13,7 +13,6 @@ type CodeSnippetProps = {
 export const CodeSnippet: React.FC<CodeSnippetProps> = ({
   code,
   language,
-  id = "code",
   showCopyButton = true,
 }) => {
   const [copied, setCopied] = useState(false);

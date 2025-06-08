@@ -102,7 +102,7 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
   }, []);
 
   const updatePromptInDB = useCallback(
-    async (newContent?: string, newName?: string) => {
+    async (newContent?: string) => {
       if (!prompt.id) return;
 
       const updates: Record<string, unknown> = {};
