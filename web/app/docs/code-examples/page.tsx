@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CodeSnippet } from "@/components/ui/CodeSnippet";
 import { useSearchParams } from "next/navigation";
 
+
 export default function CodeExamplesPage() {
   const searchParams = useSearchParams();
   const [referrer, setReferrer] = useState<string>("/");
