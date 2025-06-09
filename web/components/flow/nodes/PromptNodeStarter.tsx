@@ -103,7 +103,7 @@ function PromptNodeStarter({
   );
 
   const handleStartEmpty = useCallback(() => {
-    handlePromptChange("");
+    handlePromptChange(" ");
     setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.focus();
