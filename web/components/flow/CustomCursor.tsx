@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useReactFlow } from "@xyflow/react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useReactFlow, useOnViewportChange } from "@xyflow/react";
 import {
   ChevronUp,
   ChevronDown,
@@ -86,6 +86,30 @@ export const CustomCursor = ({
   stableUserColor,
 }: CustomCursorContainerProps) => {
   const reactFlowInstance = useReactFlow();
+  const [viewportKey, setViewportKey] = useState(0);
+  const lastViewportRef = useRef({ x: 0, y: 0, zoom: 1 });
+
+  // Throttled viewport change handler to avoid excessive re-renders
+  const handleViewportChange = useCallback(() => {
+    const viewport = reactFlowInstance.getViewport();
+    const last = lastViewportRef.current;
+
+    // Only update if there's a meaningful change (avoids micro-movements)
+    const threshold = 0.1;
+    if (
+      Math.abs(viewport.x - last.x) > threshold ||
+      Math.abs(viewport.y - last.y) > threshold ||
+      Math.abs(viewport.zoom - last.zoom) > 0.01
+    ) {
+      lastViewportRef.current = viewport;
+      setViewportKey((prev) => prev + 1);
+    }
+  }, [reactFlowInstance]);
+
+  // Use the official ReactFlow hook for viewport changes
+  useOnViewportChange({
+    onChange: handleViewportChange,
+  });
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-[50]">
