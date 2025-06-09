@@ -79,6 +79,30 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
     setPrompt(data.prompt);
   }, [data.prompt]);
 
+  // Add aggressive scroll event prevention for textarea
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    };
+
+    const handleScroll = (e: Event) => {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    };
+
+    textarea.addEventListener("wheel", handleWheel, { capture: true });
+    textarea.addEventListener("scroll", handleScroll, { capture: true });
+
+    return () => {
+      textarea.removeEventListener("wheel", handleWheel, { capture: true });
+      textarea.removeEventListener("scroll", handleScroll, { capture: true });
+    };
+  }, []);
+
   const extractVariables = useCallback((prompt: string) => {
     const variables = prompt.match(/{{.*?}}/g);
     return variables
@@ -356,6 +380,10 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
             onPointerDown={(e) => e.stopPropagation()}
             onDragStart={(e) => e.preventDefault()}
             onDrag={(e) => e.preventDefault()}
+            onWheel={(e) => {
+              // Prevent scroll events from bubbling up to ReactFlow
+              e.stopPropagation();
+            }}
             className="nodrag"
           >
             <Textarea
