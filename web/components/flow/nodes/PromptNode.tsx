@@ -16,6 +16,7 @@ import {
 import { db } from "@/instant";
 import { EditingPrompt } from "../FlowCanvas";
 import { useGlobal } from "@/lib/context/GlobalContext";
+import PromptNodeStarter from "./PromptNodeStarter";
 
 export interface PromptNodeData extends Record<string, unknown> {
   name: string;
@@ -216,7 +217,6 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
     },
     [data.name]
   );
-
   // Function to handle opening the full screen editor with animation data
   const handleOpenFullScreenEditor = useCallback(() => {
     if (textareaRef.current) {
@@ -258,7 +258,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
     <>
       <Card
         className={`
-        min-w-[400px] max-w-[1000px]
+        min-w-[700px] max-w-[1000px]
         ${selected ? "ring-2 ring-blue-500" : ""}
         shadow-lg hover:shadow-xl transition-shadow duration-200
       `}
@@ -380,24 +380,31 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
             }}
             className="nodrag"
           >
-            <Textarea
-              ref={textareaRef}
-              value={prompt}
-              onChange={(e) => {
-                handlePromptChange(e.target.value);
-              }}
-              onDrag={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              placeholder="Enter your prompt here..."
-              className={`
-              resize-none font-mono text-base leading-relaxed min-h-[150px] nodrag max-h-[600px]
-              p-4 bg-gray-50/50
-              focus:bg-white focus:ring-2 focus:ring-blue-500/20
-              transition-colors duration-200
-            `}
-            />
+            {prompt.length === 0 ? (
+              <PromptNodeStarter
+                handlePromptChange={handlePromptChange}
+                textareaRef={textareaRef}
+              />
+            ) : (
+              <Textarea
+                ref={textareaRef}
+                value={prompt}
+                onChange={(e) => {
+                  handlePromptChange(e.target.value);
+                }}
+                onDrag={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                placeholder="Enter your prompt here..."
+                className={`
+                resize-none font-mono text-base leading-relaxed min-h-[150px] nodrag max-h-[600px]
+                p-4 bg-gray-50/50
+                focus:bg-white focus:ring-2 focus:ring-blue-500/20
+                transition-colors duration-200
+              `}
+              />
+            )}
           </div>
 
           <div className="flex items-center justify-between pt-4">
