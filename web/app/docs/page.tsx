@@ -127,7 +127,7 @@ runComparison();`;
                 applications.
               </p>
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-                Curious about what it's all about? Try our{" "}
+                Curious about what it&apos;s all about? Try our{" "}
                 <a
                   href="https://www.loom.com/share/e3682fdf53424837a62c17dd08854b4c?sid=4bf6ff7b-c889-4892-8cfc-e138cdf7687b"
                   target="_blank"
@@ -147,7 +147,7 @@ runComparison();`;
                 </a>
               </p>
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-                And if you're ready, follow the quick start below to build a
+                And if you&apos;re ready, follow the quick start below to build a
                 live app in less than 5 minutes!
               </p>
             </div>
@@ -171,7 +171,7 @@ runComparison();`;
 
             <p className="text-gray-600 dark:text-gray-300 mb-6">
               This example demonstrates how to use the Promptic client to fetch
-              a prompt for comparing Apple products and use it with OpenAI's
+              a prompt for comparing Apple products and use it with OpenAI&apos;s
               API.
             </p>
 
@@ -197,7 +197,7 @@ runComparison();`;
                 <p className="text-gray-600 dark:text-gray-300 mb-4">
                   The code below shows how to fetch a prompt from Promptic,
                   format it with variables, and use it as a system prompt for
-                  OpenAI's API.
+                  OpenAI&apos;s API.
                 </p>
 
                 <CodeSnippet

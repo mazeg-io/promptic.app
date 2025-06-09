@@ -124,7 +124,7 @@ runComparison();`;
 
             <p className="text-gray-600 dark:text-gray-300 mb-6">
               This example demonstrates how to use the Promptic client to fetch
-              a prompt for comparing Apple products and use it with OpenAI's
+              a prompt for comparing Apple products and use it with OpenAI&apos;s
               API.
             </p>
 
@@ -150,7 +150,7 @@ runComparison();`;
                 <p className="text-gray-600 dark:text-gray-300 mb-4">
                   The code below shows how to fetch a prompt from Promptic,
                   format it with variables, and use it as a system prompt for
-                  OpenAI's API.
+                  OpenAI&apos;s API.
                 </p>
 
                 <CodeSnippet
