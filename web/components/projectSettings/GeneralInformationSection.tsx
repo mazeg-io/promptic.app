@@ -29,7 +29,6 @@ function GeneralInformationSection({
         await navigator.clipboard.writeText(activeProject.key);
       } catch (error) {
         console.error("Failed to copy project key:", error);
-        alert("Failed to copy project key");
       }
     }
   };
@@ -58,7 +57,6 @@ function GeneralInformationSection({
       setIsEditingProjectName(false);
     } catch (error) {
       console.error("Error updating project name:", error);
-      alert("Failed to update project name");
     } finally {
       setSavingProjectName(false);
     }

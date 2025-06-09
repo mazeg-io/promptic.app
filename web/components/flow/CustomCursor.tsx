@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useReactFlow } from "@xyflow/react";
 import {
   ChevronUp,
@@ -24,6 +24,7 @@ interface PresenceData {
   screenY?: number;
   liveCommentText?: string;
   userId?: string;
+  promptId?: string;
 }
 
 interface CustomCursorContainerProps {
@@ -90,6 +91,9 @@ export const CustomCursor = ({
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-[50]">
       {Object.entries(peers).map(([peerId, presence]) => {
         if (!presence.flowX || !presence.flowY) return null;
+
+        // TODO: Show cursor when user is in fullscreen prompt editor.
+        if (presence.promptId) return;
 
         // Get the ReactFlow viewport to calculate cursor positions
         const viewport = reactFlowInstance.getViewport();

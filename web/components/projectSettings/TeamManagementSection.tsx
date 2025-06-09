@@ -39,9 +39,6 @@ function TeamManagementSection({
         },
       });
       if (!userQuery.data.profiles || userQuery.data.profiles.length === 0) {
-        alert(
-          `User with email "${emailToSearch}" not found. The user must be registered first.`
-        );
         return;
       }
 
@@ -51,7 +48,6 @@ function TeamManagementSection({
         (user: any) => user.id === userToAdd.userId
       );
       if (isUserAlreadyInProject) {
-        alert("User is already in this project");
         return;
       }
 
@@ -60,11 +56,9 @@ function TeamManagementSection({
         db.tx.projects[activeProject.id].link({ $users: userToAdd.userId }),
       ]);
 
-      alert("User added to project successfully");
       setNewUserEmail("");
     } catch (error) {
       console.error("Error adding user to project:", error);
-      alert("Failed to add user to project");
     } finally {
       setAddingUser(false);
     }

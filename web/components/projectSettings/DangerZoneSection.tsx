@@ -33,10 +33,6 @@ function DangerZoneSection({
       setActiveProject(remainingProjects?.[0] || null);
 
       onClose();
-      alert("Project deleted successfully");
-    } catch (error) {
-      console.error("Error deleting project:", error);
-      alert("Failed to delete project");
     } finally {
       setDeletingProject(false);
       setShowDeleteConfirmation(false);

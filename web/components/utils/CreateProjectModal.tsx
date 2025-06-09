@@ -64,7 +64,6 @@ export const CreateProjectModal = ({
       setNewProjectName("");
     } catch (error) {
       console.error("Error creating project:", error);
-      alert("Failed to create project. Please try again.");
     } finally {
       setIsCreating(false);
     }

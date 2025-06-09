@@ -163,7 +163,7 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
   return (
     <div
       ref={modalRef}
-      className={`flex w-screen h-screen absolute top-0 left-0 z-[50] bg-white dark:bg-gray-900 ${
+      className={`flex w-screen h-screen absolute top-0 left-0 z-[100] bg-white dark:bg-gray-900 ${
         animationPhase === "opening" && isAnimating
           ? "shadow-2xl dark:shadow-gray-800/50"
           : ""
