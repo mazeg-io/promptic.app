@@ -24,30 +24,13 @@ export const EmptyStateNode = () => {
         <div className="space-y-6">
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              ✅ Step 1 — Create a Project
-            </h3>
-            <p className="mb-2">
-              Projects help you organize your prompts — one project per app or
-              team.
-            </p>
-            <div className="ml-4 space-y-1 text-gray-600 dark:text-gray-400">
-              <p>→ Click [ + New Project ] in the sidebar</p>
-              <p>
-                → Give it a clear name (ex: &quot;Customer Support Bot&quot; or
-                &quot;AI Chat Assistant&quot;)
-              </p>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              ✅ Step 2 — Add Your First Prompt
+              ✅ Step 1 — Add Your First Prompt
             </h3>
             <p className="mb-2">Prompts are the heart of your AI system.</p>
             <div className="ml-4 space-y-1 text-gray-600 dark:text-gray-400">
               <p>→ Inside your project, click [ + New Prompt ]</p>
               <p>
-                → Give it a name (ex: &quot;System Prompt&quot;, &quot;Planner
+                → Give it a name by clicking on the name field (ex: &quot;System Prompt&quot;, &quot;Planner
                 Agent Prompt&quot;, &quot;RAG Retriever Prompt&quot;)
               </p>
               <p>→ Start writing your prompt in the editor</p>
@@ -56,7 +39,7 @@ export const EmptyStateNode = () => {
 
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              ✅ Step 3 — Collaborate with Your Team
+              ✅ Step 2 — Collaborate with Your Team
             </h3>
             <p className="mb-2">
               Anyone can edit prompts — engineers, PMs, AI leads.
@@ -70,7 +53,7 @@ export const EmptyStateNode = () => {
 
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              ✅ Step 4 — Connect Your App
+              ✅ Step 3 — Connect Your App
             </h3>
             <p className="mb-2">
               Use our simple client to connect your app to your prompts.
