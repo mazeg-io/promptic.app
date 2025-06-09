@@ -185,7 +185,7 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
         }}
       >
         {isDiffMode && (
-          <div className="absolute bottom-[32px] right-[50%] dark:bg-gray-800 bg-gray-600 shadow-lg px-[12px] py-[6px] rounded-[12px] flex gap-[12px] w-fit">
+          <div className="absolute bottom-[32px] right-[50%] z-[10] dark:bg-gray-800 bg-gray-600 shadow-lg px-[12px] py-[6px] rounded-[12px] flex gap-[12px] w-fit">
             <Button variant="outline" size="sm" onClick={handleRejectAll}>
               Reject All
             </Button>

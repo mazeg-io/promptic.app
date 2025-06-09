@@ -87,6 +87,12 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
     setLocalVariables(data.variables || "");
   }, [data.variables]);
 
+  // Memoize the prompt availability check
+  const hasPromptContent = React.useMemo(
+    () => prompt.length > 0,
+    [prompt.length]
+  );
+
   // Add aggressive scroll event prevention for textarea
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -109,7 +115,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
       textarea.removeEventListener("wheel", handleWheel, { capture: true });
       textarea.removeEventListener("scroll", handleScroll, { capture: true });
     };
-  }, []);
+  }, [hasPromptContent]); // Re-run when textarea becomes available
 
   const extractVariables = useCallback((prompt: string) => {
     const variables = prompt.match(/{{.*?}}/g);
@@ -283,7 +289,11 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
     <>
       <Card
         className={`
-        min-w-[1000px] max-w-[1000px]
+          ${
+            hasPromptContent
+              ? "min-w-[1000px] max-w-[1000px]"
+              : "min-w-[600px] max-w-[600px]"
+          }
         ${selected ? "ring-2 ring-blue-500" : ""}
         shadow-lg hover:shadow-xl transition-shadow duration-200
       `}
@@ -405,7 +415,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
             }}
             className="nodrag"
           >
-            {prompt.length === 0 ? (
+            {!hasPromptContent ? (
               <PromptNodeStarter
                 handlePromptChange={handlePromptChange}
                 textareaRef={textareaRef}
