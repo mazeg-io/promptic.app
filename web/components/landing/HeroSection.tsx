@@ -28,7 +28,7 @@ export default function HeroSection() {
             transition={{ duration: 0.6, ease: "easeInOut" }}
           >
             <span className="relative inline-block pb-0 overflow-visible">
-              Collaborative
+              Prompt Management
               <span className="absolute left-0 right-0 bottom-[-2px] h-6 pointer-events-none select-none flex items-end justify-center overflow-visible">
                 <svg width="100%" height="24" viewBox="0 0 320 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-6 overflow-visible">
                   <motion.path
@@ -40,9 +40,9 @@ export default function HeroSection() {
                   />
                 </svg>
               </span>
-            </span> Workspace<br />
-            For <span className="relative inline-block pb-0 overflow-visible">
-              AI Agent
+            </span> Reimagined For<br />
+            <span className="relative inline-block pb-0 overflow-visible">
+              AI Teams
               <span className="absolute left-0 right-0 bottom-[-2px] h-6 pointer-events-none select-none flex items-end justify-center overflow-visible">
                 <svg width="100%" height="24" viewBox="0 0 260 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-6 overflow-visible">
                   <motion.path
@@ -62,7 +62,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: "easeInOut" }}
           >
-            Design and manage your agent prompts in one place — with a FigJam inspired workspace built for AI native teams
+            Collaboratively design, update, and serve system prompts to your LLM powered apps without touching code
           </motion.p>
           <div className="flex gap-4 justify-center lg:justify-start">
             <a href="https://github.com/mazeg-io/promptic.app" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold text-md hover:bg-slate-700 dark:hover:bg-slate-200 transition shadow">
