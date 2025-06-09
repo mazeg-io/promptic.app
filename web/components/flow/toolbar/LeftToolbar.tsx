@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import {
   Settings,
-  Layers,
   ChevronDown,
   Github,
   Book,
