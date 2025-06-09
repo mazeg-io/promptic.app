@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "framer-motion": "^12.16.0",
+    "keen-slider": "^6.8.6"
+  }
+}
