@@ -43,6 +43,10 @@ function ChatSidebar({
   });
 
   useEffect(() => {
+    console.log("messages", messages);
+  }, [messages]);
+
+  useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (
       lastMessage.role === "assistant" &&
@@ -138,9 +142,7 @@ function ChatSidebar({
                   );
                 })()}
               {message.role === "user" && <UserMessage message={message} />}
-              {message.role === "assistant" && message.parts.length === 1 && (
-                <AIMessage message={message} />
-              )}
+              {message.role === "assistant" && <AIMessage message={message} />}
             </div>
           ) : null
         )}
