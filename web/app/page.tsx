@@ -48,7 +48,7 @@ export default function Home() {
         <meta name="twitter:description" content="AI Prompt Management Platform" />
         <meta name="twitter:image" content="/preview.png" />
       </Head>
-      <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 overflow-y-scroll">
         <Navbar />
         <HeroSection />
         <div id="demo"><DemoSection /></div>
