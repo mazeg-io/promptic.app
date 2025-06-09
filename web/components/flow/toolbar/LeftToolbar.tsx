@@ -21,6 +21,7 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar";
+import prompticLogo from "@/public/logo.png";
 import { db } from "@/instant";
 import DocsModal from "@/components/utils/DocsModal";
 import CreateProjectModal from "@/components/utils/CreateProjectModal";
@@ -75,8 +76,13 @@ export const LeftToolbar = () => {
               asChild
               className="border-0 !bg-transparent hover:!bg-gray-700/20"
             >
-              <div className="flex items-center gap-[4px] h-[36px] hover:bg-gray-100 dark:hover:bg-gray-800/30 rounded-md  px-[8px]  p-2">
-                <Layers className="text-gray-600 dark:text-white w-[18px] h-[18px]" />
+              <div className="flex items-center h-[36px] hover:bg-gray-100 dark:hover:bg-gray-800/30 rounded-md  pr-[8px]  p-2 pl-0">
+                <img
+                  src={prompticLogo.src}
+                  alt="promptic"
+                  className="w-[36px] h-[36px]"
+                />
+                {/* <Layers className="text-gray-600 dark:text-white w-[18px] h-[18px]" /> */}
                 <ChevronDown className="text-gray-600 dark:text-gray-400 w-[12px] h-[12px]" />
               </div>
             </MenubarTrigger>

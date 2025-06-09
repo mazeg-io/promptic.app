@@ -17,6 +17,11 @@ import { db } from "@/instant";
 import { EditingPrompt } from "../FlowCanvas";
 import { useGlobal } from "@/lib/context/GlobalContext";
 import PromptNodeStarter from "./PromptNodeStarter";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export interface PromptNodeData extends Record<string, unknown> {
   name: string;
@@ -331,13 +336,20 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
                       } is viewing this prompt`}
                     >
                       {peer.profilePicture && (
-                        <img
-                          src={peer.profilePicture}
-                          alt={`${peer.name || "User"}'s profile`}
-                          className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                          style={{ borderColor: peer.color || "#ffffff" }}
-                          referrerPolicy="no-referrer"
-                        />
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <img
+                              src={peer.profilePicture}
+                              alt={`${peer.name || "User"}'s profile`}
+                              className="w-[32px] h-[32px] rounded-full border-2 border-white shadow-sm"
+                              style={{ borderColor: peer.color || "#ffffff" }}
+                              referrerPolicy="no-referrer"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {peer.name} {peer.lastName}
+                          </TooltipContent>
+                        </Tooltip>
                       )}
                     </div>
                   ))}
