@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   ReactFlow,
   Background,
-  Controls,
   useNodesState,
   Node,
   ReactFlowProvider,
