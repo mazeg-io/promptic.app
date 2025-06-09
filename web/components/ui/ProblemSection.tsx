@@ -99,10 +99,10 @@ function AnimatedDoubleSemicolon({ size = 80, color = "currentColor" }) {
 
 export default function ProblemSection() {
   return (
-    <section className="w-full py-20 px-4 text-center bg-white">
+    <section className="w-full py-20 px-4 text-center bg-white dark:bg-slate-900">
       <div className="max-w-4xl mx-auto flex flex-col items-center">
         <AnimatedDoubleSemicolon size={80} color="currentColor" />
-        <h2 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-slate-100 text-center leading-tight mb-10">
+        <h2 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-slate-50 text-center leading-tight mb-10">
           AI Agent prompts weren&apos;t meant to live in your codebase
         </h2>
         <div className="w-full">
@@ -112,8 +112,10 @@ export default function ProblemSection() {
             return (
               <motion.div
                 key={problem}
-                className={`text-2xl font-light text-slate-900 dark:text-slate-100 py-6 text-center ${
-                  i !== problems.length - 1 ? "border-b border-slate-300 dark:border-slate-700" : ""
+                className={`text-2xl font-light text-slate-700 dark:text-slate-300 py-6 text-center ${
+                  i !== problems.length - 1
+                    ? "border-b border-slate-200 dark:border-slate-600"
+                    : ""
                 }`}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -122,7 +124,9 @@ export default function ProblemSection() {
               >
                 {parts.length === 2 ? (
                   <>
-                    {parts[0].trim()} <span className="text-[#C5A8FF] font-bold">=</span> {parts[1].trim()}
+                    {parts[0].trim()}{" "}
+                    <span className="text-[#C5A8FF] font-bold">=</span>{" "}
+                    {parts[1].trim()}
                   </>
                 ) : (
                   problem
@@ -134,4 +138,4 @@ export default function ProblemSection() {
       </div>
     </section>
   );
-} 
+}
