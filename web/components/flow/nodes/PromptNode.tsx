@@ -415,7 +415,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
             }}
             className="nodrag"
           >
-            {!hasPromptContent ? (
+            {prompt?.length === 0 ? (
               <PromptNodeStarter
                 handlePromptChange={handlePromptChange}
                 textareaRef={textareaRef}
@@ -444,7 +444,9 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
 
           <div className="flex items-center justify-between pt-4">
             <div>
-              <p className="text-xs text-gray-500 mb-[6px]">Variables: </p>
+              {localVariables && (
+                <p className="text-xs text-gray-500 mb-[6px]">Variables: </p>
+              )}
               <div className="flex items-center gap-2 max-w-[70%] flex-wrap">
                 {localVariables &&
                   localVariables
@@ -460,6 +462,12 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
                       </Badge>
                     ))}
               </div>
+              {!localVariables && (
+                <p className="text-xs text-gray-400 italic mt-2">
+                  Use format {"{{"}variable{"}}"} to include variables in your
+                  prompt
+                </p>
+              )}
             </div>
             <div className="text-xs text-gray-500">
               {prompt.length} characters

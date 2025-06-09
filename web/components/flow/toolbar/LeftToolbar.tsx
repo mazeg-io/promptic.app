@@ -8,6 +8,7 @@ import {
   Github,
   Book,
   Plus,
+  Code,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProjectSettingsModal from "@/components/utils/ProjectSettingsModal";
@@ -23,7 +24,10 @@ import {
 import { db } from "@/instant";
 import DocsModal from "@/components/utils/DocsModal";
 import CreateProjectModal from "@/components/utils/CreateProjectModal";
+import { useRouter } from "next/navigation";
+
 export const LeftToolbar = () => {
+  const router = useRouter();
   const { activeProject, profile, setActiveProject } = useGlobal();
   const [isProjectSettingsModalOpen, setIsProjectSettingsModalOpen] =
     useState(false);
@@ -106,9 +110,13 @@ export const LeftToolbar = () => {
                 <span className="dark:text-gray-300">New Project</span>
               </MenubarItem>
               <MenubarSeparator />
-              <MenubarItem onClick={() => setIsDocsModalOpen(true)}>
+              <MenubarItem onClick={() => router.push("/docs")}>
                 <Book className="dark:text-gray-300" />
                 <span className="dark:text-gray-300">Docs</span>
+              </MenubarItem>
+              <MenubarItem onClick={() => router.push("/docs/code-examples")}>
+                <Code className="dark:text-gray-300" />
+                <span className="dark:text-gray-300">Code Examples</span>
               </MenubarItem>
               <MenubarItem
                 onClick={() =>
