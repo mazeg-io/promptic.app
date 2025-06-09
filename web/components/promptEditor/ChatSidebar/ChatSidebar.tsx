@@ -142,7 +142,9 @@ function ChatSidebar({
                   );
                 })()}
               {message.role === "user" && <UserMessage message={message} />}
-              {message.role === "assistant" && <AIMessage message={message} />}
+              {message.role === "assistant" && message.content && (
+                <AIMessage message={message} />
+              )}
             </div>
           ) : null
         )}
