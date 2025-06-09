@@ -5,10 +5,10 @@ import { ClientDoc } from "@/components/docs/ClientDoc";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { CodeSnippet } from "@/components/ui/CodeSnippet";
 
 export default function DocsPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [referrer, setReferrer] = useState<string>("/");
   const [backText, setBackText] = useState<string>("Back to Home");
@@ -24,6 +24,66 @@ export default function DocsPage() {
       setBackText("Back to Home");
     }
   }, [searchParams]);
+
+  const prompticCodeExample = `import dotenv from "dotenv";
+import { OpenAI } from "openai";
+
+dotenv.config();
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+
+import { PrompticClient } from "promptic-client";
+
+// Initialize the client with your Promptic base URL
+const client = new PrompticClient({
+  baseUrl: "https://api.promptic.app",
+  projectKey: "59e5d2ec-405c-4868-a4f1-701d90fd1e94",
+});
+
+async function compareAppleProducts(product1: string, product2: string) {
+  try {
+    console.log(\`Comparing \${product1} vs \${product2}...\`);
+
+    const prompt = await client.getPrompt("App_Store_System_Prompt")
+    .format({
+        product1: product1,
+        product2: product2,
+    });
+
+    console.log("Promptic System Prompt: ", prompt);
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: prompt },
+        {
+          role: "user",
+          content: "Can you help me decide which one I should buy?",
+        },
+      ],
+    });
+
+    return response.choices[0].message.content;
+  } catch (error: any) {
+    console.error("Error comparing products:", error.message);
+    return "Sorry, I couldn't complete the product comparison at this time.";
+  }
+}
+
+async function runComparison() {
+  const comparison = await compareAppleProducts(
+    "iPhone 15 Pro",
+    "iPhone 14 Pro"
+  );
+
+  console.log("\\n--- Apple Product Comparison ---\\n");
+  console.log(comparison);
+}
+
+runComparison();`;
 
   return (
     <div className="flex h-screen overflow-hidden">
