@@ -22,9 +22,12 @@ import {
 } from "@/components/ui/menubar";
 import { db } from "@/instant";
 import DocsModal from "@/components/utils/DocsModal";
+import CreateProjectModal from "@/components/utils/CreateProjectModal";
 export const LeftToolbar = () => {
   const { activeProject, profile, setActiveProject } = useGlobal();
   const [isProjectSettingsModalOpen, setIsProjectSettingsModalOpen] =
+    useState(false);
+  const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] =
     useState(false);
   const [isDocsModalOpen, setIsDocsModalOpen] = useState(false);
   // Query to get all user projects for the dropdown
@@ -47,6 +50,12 @@ export const LeftToolbar = () => {
         <ProjectSettingsModal
           isOpen={isProjectSettingsModalOpen}
           onClose={() => setIsProjectSettingsModalOpen(false)}
+        />
+      )}
+      {isCreateProjectModalOpen && (
+        <CreateProjectModal
+          isCreateProjectModalOpen={isCreateProjectModalOpen}
+          setIsCreateProjectModalOpen={setIsCreateProjectModalOpen}
         />
       )}
       {isDocsModalOpen && (
@@ -87,7 +96,12 @@ export const LeftToolbar = () => {
                   )}
                 </MenubarItem>
               ))}
-              <MenubarItem className="bg-gray-100 dark:bg-gray-700 mt-[6px]">
+              <MenubarItem
+                onClick={() => {
+                  setIsCreateProjectModalOpen(true);
+                }}
+                className="bg-gray-100 dark:bg-gray-700 mt-[6px]"
+              >
                 <Plus className="dark:text-gray-300" />
                 <span className="dark:text-gray-300">New Project</span>
               </MenubarItem>
