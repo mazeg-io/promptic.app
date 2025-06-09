@@ -36,6 +36,7 @@ export const useNodeHelpers = ({
       db.tx.prompts[newPromptId].update({
         name: "New Prompt",
         content: "",
+        liveContent: "",
         createdAt: Date.now(),
         updatedAt: Date.now(),
       }),

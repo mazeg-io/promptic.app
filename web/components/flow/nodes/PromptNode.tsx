@@ -48,7 +48,6 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
   selected,
 }) => {
   const { profile } = useGlobal();
-  const [isSaving, setIsSaving] = useState(false);
   const [prompt, setPrompt] = useState(data.prompt);
   const debounceTimeoutRef = useRef<NodeJS.Timeout>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -119,7 +118,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
 
       const updates: Record<string, unknown> = {};
       if (newContent != null) {
-        updates.content = newContent;
+        updates.liveContent = newContent;
       }
       if (
         newName !== undefined &&
@@ -132,7 +131,6 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
       if (Object.keys(updates).length === 0) return;
 
       try {
-        setIsSaving(true);
         await db.transact([
           db.tx.prompts[id].update({
             ...updates,
@@ -151,8 +149,6 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
         }
       } catch (error) {
         console.error("Failed to update prompt:", error);
-      } finally {
-        setIsSaving(false);
       }
     },
     [id, data, extractVariables]
@@ -285,11 +281,6 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
               {data.version && (
                 <Badge variant="secondary" className="text-xs">
                   v{data.version}
-                </Badge>
-              )}
-              {isSaving && (
-                <Badge variant="outline" className="text-xs">
-                  Saving...
                 </Badge>
               )}
 

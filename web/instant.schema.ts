@@ -27,6 +27,7 @@ const _schema = i.schema({
       id: i.string(),
       name: i.string(),
       content: i.string(),
+      liveContent: i.string(),
       variables: i.string().optional(),
       createdAt: i.number(),
       updatedAt: i.number().indexed(),

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CloudAlert, Cable, Sun, Moon, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProjectSettingsModal from "@/components/utils/ProjectSettingsModal";
@@ -13,19 +13,79 @@ import {
 } from "@/components/ui/tooltip";
 import DocsModal from "@/components/utils/DocsModal";
 import { cn } from "@/lib/utils";
+import { db } from "@/instant";
 
 export const RightToolbar = ({ room }: { room: any }) => {
-  const { theme, setTheme } = useGlobal();
+  const { theme, setTheme, activeProject } = useGlobal();
   const [isProjectSettingsModalOpen, setIsProjectSettingsModalOpen] =
     useState(false);
   const [isDocsModalOpen, setIsDocsModalOpen] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
+  const [isSynced, setIsSynced] = useState(true);
+  const [isPublishing, setIsPublishing] = useState(false);
 
-  const handlePublish = () => {
-    setIsPublished(true);
-    setTimeout(() => {
-      setIsPublished(false);
-    }, 2000);
+  // Query all prompts for the active project
+  const { data: promptsData } = db.useQuery(
+    activeProject?.id
+      ? {
+          prompts: {
+            $: {
+              where: {
+                project: activeProject.id,
+              },
+            },
+          },
+        }
+      : null
+  );
+
+  // Check sync status whenever prompts data changes
+  useEffect(() => {
+    if (promptsData?.prompts && promptsData.prompts.length > 0) {
+      const allSynced = promptsData.prompts.every(
+        (prompt) => prompt.liveContent === prompt.content
+      );
+      setIsSynced(allSynced);
+    } else {
+      // If no prompts, consider it synced
+      setIsSynced(true);
+    }
+  }, [promptsData]);
+
+  const handlePublish = async () => {
+    if (isSynced || isPublishing) return;
+
+    setIsPublishing(true);
+
+    try {
+      // Get all prompts that need syncing
+      const promptsToSync =
+        promptsData?.prompts?.filter(
+          (prompt) => prompt.liveContent !== prompt.content
+        ) || [];
+
+      // Update all prompts concurrently
+      const updatePromises = promptsToSync.map((prompt) =>
+        db.transact(
+          db.tx.prompts[prompt.id].update({
+            content: prompt.liveContent,
+            updatedAt: Date.now(),
+          })
+        )
+      );
+
+      await Promise.all(updatePromises);
+
+      // Show success feedback
+      setIsPublished(true);
+      setTimeout(() => {
+        setIsPublished(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to sync prompts:", error);
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   return (
@@ -85,7 +145,14 @@ export const RightToolbar = ({ room }: { room: any }) => {
                 "flex items-center gap-2 transition-colors duration-200",
                 isPublished
                   ? "bg-green-600 text-white hover:bg-green-700"
+                  : isSynced
+                  ? "bg-gray-600 text-white hover:bg-gray-600 cursor-auto"
+                  : isPublishing
+                  ? "bg-purple-400 text-white hover:bg-purple-400 cursor-wait"
                   : "bg-purple-600 text-white hover:bg-purple-700"
+                // isPublished
+                //   ? "bg-green-600 text-white hover:bg-green-700"
+                //   : "bg-purple-600 text-white hover:bg-purple-700"
               )}
               onClick={handlePublish}
             >
@@ -94,7 +161,13 @@ export const RightToolbar = ({ room }: { room: any }) => {
               ) : (
                 <CloudAlert className="w-4 h-4" />
               )}
-              {isPublished ? "Published" : "Publish"}
+              {isPublished
+                ? "Published"
+                : isSynced
+                ? "Synced"
+                : isPublishing
+                ? "Publishing..."
+                : "Publish"}
             </Button>
           </TooltipTrigger>
           <TooltipContent>Sync prompts with api</TooltipContent>

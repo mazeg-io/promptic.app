@@ -181,7 +181,6 @@ const FlowCanvasInner: React.FC = () => {
                 elementsSelectable={interactionMode === "pointer"}
               >
                 <Background />
-                <Controls />
               </ReactFlow>
 
               {isReady && (

@@ -107,7 +107,7 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
 
       const updates: Record<string, unknown> = {};
       if (newContent != null) {
-        updates.content = newContent;
+        updates.liveContent = newContent;
       }
 
       if (Object.keys(updates).length === 0) return;
