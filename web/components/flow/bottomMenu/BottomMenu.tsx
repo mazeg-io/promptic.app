@@ -17,7 +17,7 @@ function BottomMenu({
   handleCreatePromptNode,
 }: BottomMenuProps) {
   return (
-    <div className="absolute bottom-[12px] left-[50%] -translate-x-1/2 z-[50] flex  border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg shadow-lg border max-h-[80px]">
+    <div className="absolute bottom-[12px] left-[50%] -translate-x-1/2 z-[40] flex  border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg shadow-lg border max-h-[80px]">
       <div className="flex flex-col border-r border-gray-300 dark:border-gray-600">
         <div
           className={`flex items-center justify-center w-[44px] h-[40px] rounded-tl-lg cursor-pointer transition-colors ${

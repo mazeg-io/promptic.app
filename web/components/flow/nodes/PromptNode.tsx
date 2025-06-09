@@ -359,7 +359,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
                 }}
               >
                 <Sparkles className="h-4 w-4 text-white mr-2" />
-                Chat with AI
+                {hasPromptContent ? "Update with AI" : "Generate with AI"}
               </Button>
 
               <style jsx>{`

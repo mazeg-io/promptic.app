@@ -177,6 +177,14 @@ function TeamManagementSection({
                           alt={`${projectUser.profile.firstName} ${projectUser.profile.lastName}`}
                           className="h-full w-full object-cover"
                           crossOrigin="anonymous"
+                          onError={(e) => {
+                            // Try without crossOrigin if it fails
+                            const img = e.target as HTMLImageElement;
+                            if (img.crossOrigin) {
+                              img.crossOrigin = "";
+                              img.src = img.src; // Reload the image
+                            }
+                          }}
                         />
                       ) : (
                         <div className="h-full w-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
