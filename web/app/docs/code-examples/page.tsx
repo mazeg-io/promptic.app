@@ -5,10 +5,9 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CodeSnippet } from "@/components/ui/CodeSnippet";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export default function CodeExamplesPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [referrer, setReferrer] = useState<string>("/");
   const [backText, setBackText] = useState<string>("Back to Home");
