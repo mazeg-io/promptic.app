@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useReactFlow, useOnViewportChange } from "@xyflow/react";
 import {
   ChevronUp,
@@ -86,7 +86,7 @@ export const CustomCursor = ({
   stableUserColor,
 }: CustomCursorContainerProps) => {
   const reactFlowInstance = useReactFlow();
-  const [viewportKey, setViewportKey] = useState(0);
+  const [, setViewportKey] = useState(0);
   const lastViewportRef = useRef({ x: 0, y: 0, zoom: 1 });
 
   // Throttled viewport change handler to avoid excessive re-renders
