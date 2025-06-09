@@ -46,7 +46,6 @@ export async function POST(req: Request) {
           prompt: z.string().describe("writed or updated prompt."),
         }),
         execute: async ({ prompt }) => {
-          console.log("prompt", prompt);
           return {
             prompt,
           };

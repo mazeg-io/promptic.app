@@ -43,10 +43,6 @@ function ChatSidebar({
   });
 
   useEffect(() => {
-    console.log("messages", messages);
-  }, [messages]);
-
-  useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (
       lastMessage.role === "assistant" &&
