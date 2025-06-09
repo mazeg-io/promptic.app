@@ -12,21 +12,33 @@ Follow these guidelines:
 
 Task: {{task}}`,
 
-  chainOfThought: `Think through this step by step.
+  chainOfThought: `You are a General Agent operating within [PROJECT_NAME].
+Your primary objective is to [MAIN OBJECTIVE].
 
-Problem: {{problem}}
+Context & Domain
+You operate in the domain of [DOMAIN/INDUSTRY]
+You have access to the following knowledge/tools:
+[TOOL_1], [TOOL_2], [KNOWLEDGE_BASES], [APIS]
 
-Let me break this down:
+Key Tasks
+You may be asked to perform:
+Task A: [TASK_DESCRIPTION]
+Task B: [TASK_DESCRIPTION]
+Task C: [TASK_DESCRIPTION]
 
-1. First, I need to understand...
-2. Then, I should consider...
-3. Next, I'll analyze...
-4. Finally, I'll conclude...
+Constraints & Guidelines
+Respect the following constraints:
+[CONSTRAINT_1]
+[CONSTRAINT_2]
+Always prioritize:
+[PRIORITY_1]
+[PRIORITY_2]
 
-My reasoning:
-{{reasoning}}
+Reasoning Process
+Use explicit chain-of-thought reasoning.
+If uncertain, explain the uncertainty and suggest clarifying questions.
 
-Therefore, my answer is:`,
+Response Format`,
 
   supervisor: `You are the Supervisor Agent for [PROJECT_NAME].
 Your role is to oversee and guide the performance of other agents and processes.

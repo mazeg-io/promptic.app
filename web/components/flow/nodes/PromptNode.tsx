@@ -50,6 +50,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
 }) => {
   const { profile } = useGlobal();
   const [prompt, setPrompt] = useState(data.prompt);
+  const [localVariables, setLocalVariables] = useState(data.variables || "");
   const debounceTimeoutRef = useRef<NodeJS.Timeout>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
@@ -81,6 +82,11 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
     setPrompt(data.prompt);
   }, [data.prompt]);
 
+  // Update local variables when data.variables changes
+  useEffect(() => {
+    setLocalVariables(data.variables || "");
+  }, [data.variables]);
+
   // Add aggressive scroll event prevention for textarea
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -107,15 +113,21 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
 
   const extractVariables = useCallback((prompt: string) => {
     const variables = prompt.match(/{{.*?}}/g);
-    return variables
-      ?.map((variable) => variable.replace(/{{|}}/g, ""))
+    const extractedVars = variables
+      ?.map((variable) => variable.replace(/{{|}}/g, "").trim())
+      .filter((variable) => variable.length > 0)
       .join(", ");
+    return extractedVars || "";
   }, []);
 
   // Function to update the database and node
   const updatePromptInDB = useCallback(
     async (newContent?: string, newName?: string) => {
       if (!id) return;
+
+      const contentToUse = newContent != null ? newContent : data.prompt;
+      const nameToUse = newName != null ? newName : data.name;
+      const newVariables = extractVariables(contentToUse);
 
       const updates: Record<string, unknown> = {};
       if (newContent != null) {
@@ -129,23 +141,32 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
         updates.name = newName;
       }
 
+      // Always update variables if content changed
+      if (newContent != null) {
+        updates.variables = newVariables;
+      }
+
       if (Object.keys(updates).length === 0) return;
 
       try {
         await db.transact([
           db.tx.prompts[id].update({
             ...updates,
-            variables: extractVariables(newContent || ""),
             updatedAt: Date.now(),
           }),
         ]);
 
+        // Update local variables state immediately
+        if (newContent != null) {
+          setLocalVariables(newVariables);
+        }
+
         // Update the node data directly
         if (data.updateNode) {
           data.updateNode(id, {
-            prompt: newContent || data.prompt,
-            name: newName || data.name,
-            variables: extractVariables(newContent || ""),
+            prompt: contentToUse,
+            name: nameToUse,
+            variables: newVariables,
           });
         }
       } catch (error) {
@@ -161,6 +182,10 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
       // Update local state immediately
       setPrompt(newContent);
 
+      // Extract and update variables immediately for UI responsiveness
+      const newVariables = extractVariables(newContent);
+      setLocalVariables(newVariables);
+
       // Clear any existing timeout
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
@@ -171,7 +196,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
         updatePromptInDB(newContent);
       }, 500); // 500ms debounce
     },
-    [updatePromptInDB]
+    [updatePromptInDB, extractVariables]
   );
 
   // Cleanup timeout on unmount
@@ -258,7 +283,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
     <>
       <Card
         className={`
-        min-w-[700px] max-w-[1000px]
+        min-w-[1000px] max-w-[1000px]
         ${selected ? "ring-2 ring-blue-500" : ""}
         shadow-lg hover:shadow-xl transition-shadow duration-200
       `}
@@ -411,9 +436,10 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
             <div>
               <p className="text-xs text-gray-500 mb-[6px]">Variables: </p>
               <div className="flex items-center gap-2 max-w-[70%] flex-wrap">
-                {data?.variables &&
-                  data.variables
+                {localVariables &&
+                  localVariables
                     .split(", ")
+                    .filter((variable: string) => variable.trim().length > 0)
                     .map((variable: string, index: number) => (
                       <Badge
                         variant="outline"
