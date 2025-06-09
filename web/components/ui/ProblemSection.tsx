@@ -122,7 +122,7 @@ export default function ProblemSection() {
               >
                 {parts.length === 2 ? (
                   <>
-                    {parts[0].trim()} <span className="text-red-500 font-bold">=</span> {parts[1].trim()}
+                    {parts[0].trim()} <span className="text-[#C5A8FF] font-bold">=</span> {parts[1].trim()}
                   </>
                 ) : (
                   problem

@@ -23,6 +23,18 @@ export default function SolutionSection() {
           </motion.p>
         </div>
         <FeatureCarousel/>
+        <div className="w-full max-w-4xl mx-auto mt-16 rounded-xl overflow-hidden shadow-2xl">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-auto"
+          >
+            <source src="/demo.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
       </div>
     </section>
   );
