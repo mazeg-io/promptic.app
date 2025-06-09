@@ -12,6 +12,7 @@ export default function CodeExamplesPage() {
   const [referrer, setReferrer] = useState<string>("/");
   const [backText, setBackText] = useState<string>("Back to Home");
 
+  
   // Detect the referrer from URL parameters
   useEffect(() => {
     const from = searchParams.get("from");
