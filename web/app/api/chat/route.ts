@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     tools: {
       prompt_write: tool({
         description:
-          "Call this tool when user ask to rewrite or write a prompt. If user ask to rewrite part of the prompt, you still should return the whole prompt but with the updated part.",
+          "Call this tool ONLY when the user explicitly asks to write, rewrite, change, update, or modify a prompt. This tool is used to finalize and save the edited prompt. \nRULES:\n1. The 'prompt' parameter MUST contain the entire, complete text of the prompt after all edits, even if only one line was changed.\n2. If the user's request was to 'rewrite' or 'change' the prompt, you MUST NOT return the original text. The new prompt must contain meaningful improvements and tangible changes.",
         parameters: z.object({
           prompt: z.string().describe("writed or updated prompt."),
         }),
