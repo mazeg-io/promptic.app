@@ -1,12 +1,30 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CodeSnippet } from "@/components/ui/CodeSnippet";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function CodeExamplesPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [referrer, setReferrer] = useState<string>("/");
+  const [backText, setBackText] = useState<string>("Back to Home");
+
+  // Detect the referrer from URL parameters
+  useEffect(() => {
+    const from = searchParams.get("from");
+    if (from === "canvas") {
+      setReferrer("/canvas");
+      setBackText("Back to Canvas");
+    } else {
+      setReferrer("/");
+      setBackText("Back to Home");
+    }
+  }, [searchParams]);
+
   const prompticCodeExample = `import dotenv from "dotenv";
 import { OpenAI } from "openai";
 
@@ -22,14 +40,14 @@ import { PrompticClient } from "promptic-client";
 // Initialize the client with your Promptic base URL
 const client = new PrompticClient({
   baseUrl: "https://api.promptic.app",
-  projectKey: "project_key",
+  projectKey: "59e5d2ec-405c-4868-a4f1-701d90fd1e94",
 });
 
 async function compareAppleProducts(product1: string, product2: string) {
   try {
     console.log(\`Comparing \${product1} vs \${product2}...\`);
 
-    const prompt = await client.getPrompt("prompt_key")
+    const prompt = await client.getPrompt("App_Store_System_Prompt")
     .format({
         product1: product1,
         product2: product2,
@@ -73,14 +91,14 @@ runComparison();`;
       <div className="w-64 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
         <div className="sticky top-0 p-4 h-screen overflow-y-auto">
           <div className="mb-6">
-            <Link href="/canvas">
+            <Link href={referrer}>
               <Button
                 variant="ghost"
                 size="sm"
                 className="flex items-center gap-2"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back to Canvas
+                {backText}
               </Button>
             </Link>
           </div>
@@ -90,7 +108,15 @@ runComparison();`;
               <h3 className="font-medium text-sm mb-2">Introduction</h3>
               <ul className="space-y-2 pl-4">
                 <li className="text-sm text-gray-600 dark:text-gray-400">
-                  <Link href="/docs">Getting started</Link>
+                  <Link
+                    href={`/docs${
+                      searchParams.get("from")
+                        ? `?from=${searchParams.get("from")}`
+                        : ""
+                    }`}
+                  >
+                    Getting started
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -101,7 +127,13 @@ runComparison();`;
               </h3>
               <ul className="space-y-2 pl-4">
                 <li className="text-sm text-blue-600">
-                  <Link href="/docs/code-examples">
+                  <Link
+                    href={`/docs/code-examples${
+                      searchParams.get("from")
+                        ? `?from=${searchParams.get("from")}`
+                        : ""
+                    }`}
+                  >
                     Apple Product Comparison
                   </Link>
                 </li>

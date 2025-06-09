@@ -5,7 +5,7 @@ import { db } from "@/instant";
 import { useRouter, usePathname } from "next/navigation";
 import { useGlobal } from "@/lib/context/GlobalContext";
 
-const PUBLIC_ROUTES = ["/login", "/"];
+const PUBLIC_ROUTES = ["/login", "/", "/docs", "/docs/code-examples"];
 
 const AUTH_ROUTES = ["/login"];
 
@@ -13,6 +13,9 @@ const isPublicRoute = (pathname: string): boolean => {
   return PUBLIC_ROUTES.some((route) => {
     // Exact match for most routes
     if (route === pathname) return true;
+
+    // Special case for docs routes
+    if (pathname.startsWith("/docs/")) return true;
 
     // Handle dynamic routes (e.g., /blog/[slug])
     if (route.includes("[") && route.includes("]")) {
@@ -47,6 +50,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
   }, [isLoading, user, pathname, router]);
+
+  // For docs pages, don't show loading state even if not authenticated
+  if (pathname.startsWith("/docs")) {
+    return <>{children}</>;
+  }
 
   if (isLoading || (user && !profile)) {
     return (

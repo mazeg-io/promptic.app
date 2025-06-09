@@ -110,11 +110,13 @@ export const LeftToolbar = () => {
                 <span className="dark:text-gray-300">New Project</span>
               </MenubarItem>
               <MenubarSeparator />
-              <MenubarItem onClick={() => router.push("/docs")}>
+              <MenubarItem onClick={() => router.push("/docs?from=canvas")}>
                 <Book className="dark:text-gray-300" />
                 <span className="dark:text-gray-300">Docs</span>
               </MenubarItem>
-              <MenubarItem onClick={() => router.push("/docs/code-examples")}>
+              <MenubarItem
+                onClick={() => router.push("/docs/code-examples?from=canvas")}
+              >
                 <Code className="dark:text-gray-300" />
                 <span className="dark:text-gray-300">Code Examples</span>
               </MenubarItem>

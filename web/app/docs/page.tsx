@@ -1,72 +1,29 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ClientDoc } from "@/components/docs/ClientDoc";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CodeSnippet } from "@/components/ui/CodeSnippet";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function DocsPage() {
-  const prompticCodeExample = `import dotenv from "dotenv";
-import { OpenAI } from "openai";
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [referrer, setReferrer] = useState<string>("/");
+  const [backText, setBackText] = useState<string>("Back to Home");
 
-dotenv.config();
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-
-import { PrompticClient } from "promptic-client";
-
-// Initialize the client with your Promptic base URL
-const client = new PrompticClient({
-  baseUrl: "https://api.promptic.app",
-  projectKey: "project_key",
-});
-
-async function compareAppleProducts(product1: string, product2: string) {
-  try {
-    console.log(\`Comparing \${product1} vs \${product2}...\`);
-
-    const prompt = await client.getPrompt("prompt_key")
-    .format({
-        product1: product1,
-        product2: product2,
-    });
-
-    console.log("Promptic System Prompt: ", prompt);
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: prompt },
-        {
-          role: "user",
-          content: "Can you help me decide which one I should buy?",
-        },
-      ],
-    });
-
-    return response.choices[0].message.content;
-  } catch (error: any) {
-    console.error("Error comparing products:", error.message);
-    return "Sorry, I couldn't complete the product comparison at this time.";
-  }
-}
-
-async function runComparison() {
-  const comparison = await compareAppleProducts(
-    "iPhone 15 Pro",
-    "iPhone 14 Pro"
-  );
-
-  console.log("\\n--- Apple Product Comparison ---\\n");
-  console.log(comparison);
-}
-
-runComparison();`;
+  // Detect the referrer from URL parameters
+  useEffect(() => {
+    const from = searchParams.get("from");
+    if (from === "canvas") {
+      setReferrer("/canvas");
+      setBackText("Back to Canvas");
+    } else {
+      setReferrer("/");
+      setBackText("Back to Home");
+    }
+  }, [searchParams]);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -74,14 +31,14 @@ runComparison();`;
       <div className="w-64 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
         <div className="sticky top-0 p-4 h-screen overflow-y-auto">
           <div className="mb-6">
-            <Link href="/canvas">
+            <Link href={referrer}>
               <Button
                 variant="ghost"
                 size="sm"
                 className="flex items-center gap-2"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back to Canvas
+                {backText}
               </Button>
             </Link>
           </div>
@@ -91,7 +48,15 @@ runComparison();`;
               <h3 className="font-medium text-sm mb-2">Introduction</h3>
               <ul className="space-y-2 pl-4">
                 <li className="text-sm text-blue-600">
-                  <Link href="/docs">Getting started</Link>
+                  <Link
+                    href={`/docs${
+                      searchParams.get("from")
+                        ? `?from=${searchParams.get("from")}`
+                        : ""
+                    }`}
+                  >
+                    Getting started
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -102,7 +67,13 @@ runComparison();`;
               </h3>
               <ul className="space-y-2 pl-4">
                 <li className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400">
-                  <Link href="/docs/code-examples">
+                  <Link
+                    href={`/docs/code-examples${
+                      searchParams.get("from")
+                        ? `?from=${searchParams.get("from")}`
+                        : ""
+                    }`}
+                  >
                     Apple Product Comparison
                   </Link>
                 </li>
@@ -256,33 +227,6 @@ runComparison();`;
                 className="text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400"
               >
                 Quick start
-              </Link>
-            </li>
-            <li className="text-sm mt-4 font-medium text-gray-800 dark:text-gray-200">
-              Code Examples
-            </li>
-            <li className="text-sm ml-2">
-              <Link
-                href="#client-integration"
-                className="text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400"
-              >
-                Apple Product Comparison
-              </Link>
-            </li>
-            <li className="text-sm ml-2">
-              <Link
-                href="#initialize-client"
-                className="text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400"
-              >
-                Setting up the environment
-              </Link>
-            </li>
-            <li className="text-sm ml-2">
-              <Link
-                href="#use-in-application"
-                className="text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400"
-              >
-                Using Promptic with OpenAI
               </Link>
             </li>
           </ul>
