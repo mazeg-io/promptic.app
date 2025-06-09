@@ -71,7 +71,7 @@ export const RightToolbar = ({ room }: { room: any }) => {
               onClick={() => setIsDocsModalOpen(true)}
             >
               <Cable className="w-4 h-4" />
-              Connect API
+              View API Docs
             </Button>
           </TooltipTrigger>
           <TooltipContent>Connect to your api</TooltipContent>

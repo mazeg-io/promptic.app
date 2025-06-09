@@ -31,7 +31,7 @@ export default function HeroSection() {
               <svg width="100%" height="24" viewBox="0 0 320 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-6 overflow-visible">
                 <motion.path
                   d="M8 20 Q 40 28, 80 20 Q 120 12, 160 20 Q 200 28, 240 20 Q 280 12, 312 20"
-                  stroke="#6366f1" strokeWidth="4" fill="none"
+                  stroke="#1590FF" strokeWidth="4" fill="none"
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
                   transition={{ duration: 1.2, ease: "easeInOut" }}
@@ -45,7 +45,7 @@ export default function HeroSection() {
               <svg width="100%" height="24" viewBox="0 0 260 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-6 overflow-visible">
                 <motion.path
                   d="M8 20 Q 40 12, 80 20 Q 120 28, 160 20 Q 200 12, 252 20"
-                  stroke="#e11d48" strokeWidth="4" fill="none"
+                  stroke="#C5ABFF" strokeWidth="4" fill="none"
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
                   transition={{ duration: 1.2, ease: "easeInOut" }}
