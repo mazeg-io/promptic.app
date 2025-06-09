@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useReactFlow } from "@xyflow/react";
 import { useGlobal } from "@/lib/context/GlobalContext";
 
@@ -24,6 +24,7 @@ interface PresenceData {
   screenX?: number;
   screenY?: number;
   liveCommentText?: string;
+  userId?: string;
 }
 
 interface UsePresenceReturn {
@@ -52,7 +53,38 @@ export const usePresence = ({
   const hasPublishedInitialPresence = useRef<boolean>(false);
 
   // Add user name into cursors and get presence data
-  const { user: myPresence, peers, publishPresence } = room.usePresence({});
+  const {
+    user: myPresence,
+    peers: rawPeers,
+    publishPresence,
+  } = room.usePresence({});
+
+  // Filter peers to show only unique users (deduplicate by userId)
+  const peers = useMemo(() => {
+    if (!rawPeers || !profile?.userId) return rawPeers;
+
+    const seenUserIds = new Set<string>();
+    const filteredPeers: Record<string, any> = {};
+
+    // Add current user to seen set to avoid showing them in peers
+    seenUserIds.add(profile.userId);
+
+    Object.entries(rawPeers).forEach(([peerId, peer]: [string, any]) => {
+      // Extract userId from peer data
+      const peerUserId = peer?.userId;
+
+      // Skip if no userId or already seen this user
+      if (!peerUserId || seenUserIds.has(peerUserId)) {
+        return;
+      }
+
+      // Add this user to seen set and include in filtered peers
+      seenUserIds.add(peerUserId);
+      filteredPeers[peerId] = peer;
+    });
+
+    return filteredPeers;
+  }, [rawPeers, profile?.userId]);
 
   // Update presence when profile loads or changes
   useEffect(() => {
@@ -72,12 +104,13 @@ export const usePresence = ({
       stableUserLastName.current = lastName;
       stableUserProfilePicture.current = profilePicture;
 
-      // Always publish presence when profile is available
+      // Always publish presence when profile is available - include userId for deduplication
       publishPresence({
         name: name,
         lastName: lastName,
         color: stableUserColor.current,
         profilePicture: profilePicture || undefined,
+        userId: userId, // Add userId to presence data for deduplication
       });
 
       hasPublishedInitialPresence.current = true;
@@ -103,7 +136,8 @@ export const usePresence = ({
       if (
         !stableUserName.current ||
         !stableUserColor.current ||
-        !hasPublishedInitialPresence.current
+        !hasPublishedInitialPresence.current ||
+        !profile?.userId
       )
         return;
 
@@ -123,6 +157,7 @@ export const usePresence = ({
         screenX: event.clientX,
         screenY: event.clientY,
         liveCommentText: liveCommentText,
+        userId: profile.userId, // Include userId in all presence updates
       });
     };
 
@@ -133,7 +168,7 @@ export const usePresence = ({
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [screenToFlowPosition, publishPresence, liveCommentText]);
+  }, [screenToFlowPosition, publishPresence, liveCommentText, profile?.userId]);
 
   return {
     publishPresence,

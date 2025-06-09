@@ -139,8 +139,9 @@ const FlowCanvasInner: React.FC = () => {
               flowY: myPresence.flowY,
               screenX: myPresence.screenX,
               screenY: myPresence.screenY,
-              liveCommentText: prompt,
+              liveCommentText: liveCommentText,
               promptId: null,
+              userId: profile?.userId, // Add userId for deduplication
             });
             setEditingPrompt(null);
           }}

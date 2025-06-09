@@ -23,6 +23,7 @@ interface PresenceData {
   screenX?: number;
   screenY?: number;
   liveCommentText?: string;
+  userId?: string;
 }
 
 interface CustomCursorContainerProps {

@@ -9,6 +9,7 @@ import { db } from "@/instant";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import UserManagementModal from "@/components/utils/UserManagementModal";
+import { useGlobal } from "@/lib/context/GlobalContext";
 
 interface ToolbarOnlineUsersProps {
   room?: any;
@@ -61,7 +62,35 @@ const UserAvatar: React.FC<UserAvatarProps> = memo(
 UserAvatar.displayName = "UserAvatar";
 
 export const ToolbarOnlineUsers = ({ room }: ToolbarOnlineUsersProps) => {
-  const { user: myPresence, peers } = db.rooms.usePresence(room);
+  const { profile } = useGlobal();
+  const { user: myPresence, peers: rawPeers } = db.rooms.usePresence(room);
+
+  // Filter peers to show only unique users (deduplicate by userId)
+  const peers = useMemo(() => {
+    if (!rawPeers || !profile?.userId) return rawPeers;
+
+    const seenUserIds = new Set<string>();
+    const filteredPeers: Record<string, any> = {};
+
+    // Add current user to seen set to avoid showing them in peers
+    seenUserIds.add(profile.userId);
+
+    Object.entries(rawPeers).forEach(([peerId, peer]: [string, any]) => {
+      // Extract userId from peer data
+      const peerUserId = peer?.userId;
+
+      // Skip if no userId or already seen this user
+      if (!peerUserId || seenUserIds.has(peerUserId)) {
+        return;
+      }
+
+      // Add this user to seen set and include in filtered peers
+      seenUserIds.add(peerUserId);
+      filteredPeers[peerId] = peer;
+    });
+
+    return filteredPeers;
+  }, [rawPeers, profile?.userId]);
 
   // Memoize the combined users array to prevent unnecessary re-renders
   const allUsers = useMemo(() => {

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { db } from "@/instant";
 import { EditingPrompt } from "../FlowCanvas";
+import { useGlobal } from "@/lib/context/GlobalContext";
 
 export interface PromptNodeData extends Record<string, unknown> {
   name: string;
@@ -46,6 +47,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
   id,
   selected,
 }) => {
+  const { profile } = useGlobal();
   const [isSaving, setIsSaving] = useState(false);
   const [prompt, setPrompt] = useState(data.prompt);
   const debounceTimeoutRef = useRef<NodeJS.Timeout>(null);
@@ -252,8 +254,9 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
       screenY: myPresence.screenY,
       liveCommentText: prompt,
       promptId: id,
+      userId: profile?.userId, // Add userId for deduplication
     });
-  }, [id, data]);
+  }, [id, data, profile?.userId]);
 
   return (
     <>
