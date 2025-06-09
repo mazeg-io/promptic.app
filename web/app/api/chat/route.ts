@@ -13,7 +13,35 @@ export async function POST(req: Request) {
     tools: {
       prompt_write: tool({
         description:
-          "Call this tool ONLY when the user explicitly asks to write, rewrite, change, update, or modify a prompt. This tool is used to finalize and save the edited prompt. \nRULES:\n1. The 'prompt' parameter MUST contain the entire, complete text of the prompt after all edits, even if only one line was changed.\n2. If the user's request was to 'rewrite' or 'change' the prompt, you MUST NOT return the original text. The new prompt must contain meaningful improvements and tangible changes.",
+          "TRIGGER: Activate this tool when user intent matches ANY of these patterns:\n" +
+          "- Creation: write, create, compose, draft, generate, craft, make, build, develop, design\n" +
+          "- Modification: rewrite, revise, edit, modify, update, change, transform, adjust, enhance, refine\n" +
+          "- Improvement: improve, optimize, polish, perfect, enhance\n\n" +
+          "PURPOSE: Finalize and persist prompt modifications or creations in the system.\n\n" +
+          "RULES:\n" +
+          "1. COMPLETENESS: The 'prompt' parameter MUST contain the complete, final version of the prompt, regardless of modification scope.\n" +
+          "2. IMPROVEMENT: For modification requests, the new prompt MUST demonstrate:\n" +
+          "   - Clear structural improvements\n" +
+          "   - Enhanced clarity and precision\n" +
+          "   - Better organization or flow\n" +
+          "   - More effective language or tone\n" +
+          "3. VALIDATION: Ensure the modified prompt:\n" +
+          "   - Maintains original intent\n" +
+          "   - Is grammatically correct\n" +
+          "   - Has no redundant content\n" +
+          "   - Is properly formatted\n" +
+          "4. CREATION: For new prompt creation requests:\n" +
+          "   - Generate a complete, well-structured prompt\n" +
+          "   - Include all necessary sections and components\n" +
+          "   - Follow best practices for prompt engineering\n" +
+          "   - Ensure the prompt is ready for immediate use\n" +
+          "5. TOOL TRIGGERING:\n" +
+          "   - MUST call this tool for ANY creation request (create, make, generate, write, etc.)\n" +
+          "   - MUST call this tool for ANY modification request (edit, update, change, etc.)\n" +
+          "   - MUST call this tool for ANY improvement request (enhance, optimize, etc.)\n" +
+          "   - MUST provide the complete prompt in the 'prompt' parameter\n" +
+          "   - MUST NOT return the original prompt for any modification request\n" +
+          "   - MUST ensure the prompt is properly formatted with newlines",
         parameters: z.object({
           prompt: z.string().describe("writed or updated prompt."),
         }),
