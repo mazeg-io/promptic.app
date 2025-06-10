@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Promptic",
   description: "AI Prompt Management Platform",
+  metadataBase: new URL('https://promptic.app'),
   openGraph: {
     title: "Promptic",
     description: "AI Prompt Management Platform",
