@@ -39,7 +39,6 @@ import { PrompticClient } from "promptic-client";
 
 // Initialize the client with your Promptic base URL
 const client = new PrompticClient({
-  baseUrl: "https://api.promptic.app",
   projectKey: "59e5d2ec-405c-4868-a4f1-701d90fd1e94",
 });
 
