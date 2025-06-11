@@ -85,19 +85,15 @@ This allows multiple team members to work on prompts simultaneously, see each ot
 
 ```
 web/
-├── public/           # Static assets
-├── src/
-│   ├── components/   # React components
-│   ├── hooks/        # Custom React hooks
-│   ├── services/     # API and external services
-│   ├── store/        # State management
-│   ├── types/        # TypeScript type definitions
-│   ├── utils/        # Utility functions
-│   ├── App.tsx       # Main application component
-│   └── main.tsx      # Application entry point
-├── .env.example      # Example environment variables
-├── package.json      # Dependencies and scripts
-└── vite.config.ts    # Vite configuration
+├── app/                # Application pages and API routes
+├── components/         # React components (UI, flow, editor, etc.)
+├── constants/          # Constant values and helpers
+├── instant/            # InstantDB integration
+├── interaces/          # TypeScript interfaces
+├── lib/                # Library code and context providers
+├── public/             # Static assets
+├── .env.example        # Example environment variables
+├── next.config.ts      # Next.js configuration
 ```
 
 ## Deployment
