@@ -13,7 +13,7 @@ export const useNodeHelpers = ({
   nodes: Node[];
   onNodesChange: (changes: NodeChange[]) => void;
 }) => {
-  const { fitView, getViewport, screenToFlowPosition } = useReactFlow();
+  const { fitView, screenToFlowPosition } = useReactFlow();
   const { activeProject } = useGlobal();
   const { updatePositionInDB } = useFlowUpdates();
 
@@ -33,7 +33,6 @@ export const useNodeHelpers = ({
     const newPromptInformationId = id();
 
     // Get the center of the current viewport
-    const viewport = getViewport();
     const viewportCenter = screenToFlowPosition({
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,

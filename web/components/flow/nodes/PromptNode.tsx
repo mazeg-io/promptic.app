@@ -8,7 +8,6 @@ import {
   Trash,
   Edit3,
   FileText,
-  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
