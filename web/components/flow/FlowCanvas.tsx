@@ -178,6 +178,8 @@ const FlowCanvasInner: React.FC = () => {
                 nodesDraggable={interactionMode === "pointer"}
                 nodesConnectable={interactionMode === "pointer"}
                 elementsSelectable={interactionMode === "pointer"}
+                minZoom={0.1}
+                maxZoom={2}
               >
                 <Background />
               </ReactFlow>
