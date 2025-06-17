@@ -13,7 +13,7 @@ export const useNodeHelpers = ({
   nodes: Node[];
   onNodesChange: (changes: NodeChange[]) => void;
 }) => {
-  const { fitView } = useReactFlow();
+  const { fitView, getViewport, screenToFlowPosition } = useReactFlow();
   const { activeProject } = useGlobal();
   const { updatePositionInDB } = useFlowUpdates();
 
@@ -31,6 +31,14 @@ export const useNodeHelpers = ({
   const handleCreatePromptNode = async () => {
     const newPromptId = id();
     const newPromptInformationId = id();
+
+    // Get the center of the current viewport
+    const viewport = getViewport();
+    const viewportCenter = screenToFlowPosition({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+    });
+
     await db.transact([
       // Create the prompt and link it to the project
       db.tx.prompts[newPromptId].update({
@@ -42,9 +50,9 @@ export const useNodeHelpers = ({
       }),
       db.tx.prompts[newPromptId].link({ project: activeProject?.id }),
       db.tx.prompt_information[newPromptInformationId].update({
-        positionX: Math.floor(Math.random() * 400 + 100),
+        positionX: viewportCenter.x,
         promptId: newPromptId,
-        positionY: Math.floor(Math.random() * 300 + 100),
+        positionY: viewportCenter.y,
         height: 100,
         width: 100,
         isExpanded: false,
