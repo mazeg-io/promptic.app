@@ -5,7 +5,6 @@ export const CLIENT_USAGE_CODE = `import { PrompticClient } from "promptic-clien
 
 // Initialize the client with your Promptic base URL
 const client = new PrompticClient({
-  baseUrl: "https://api.promptic.app",
   projectKey: "YOUR_PROJECT_KEY", // Get this from the Settings tab
 });
 
@@ -17,7 +16,6 @@ export const generateClientCodeWithKey = (projectKey: string) => {
 
 // Initialize the client with your Promptic base URL
 const client = new PrompticClient({
-  baseUrl: "https://api.promptic.app",
   projectKey: "${projectKey}",
 });
 

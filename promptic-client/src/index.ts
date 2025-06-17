@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from "axios";
 import NodeCache from "node-cache";
 
 export interface PrompticClientConfig {
-  baseUrl: string;
+  baseUrl?: string;
   projectKey: string;
 }
 
@@ -23,7 +23,7 @@ export class PrompticClient {
   private cacheRefreshIntervalMs: number;
 
   constructor(config: PrompticClientConfig) {
-    this.baseUrl = config.baseUrl;
+    this.baseUrl = config.baseUrl || "https://api.promptic.app";
     this.projectKey = config.projectKey;
     this.cacheRefreshIntervalMs = 30000;
     this.client = axios.create({
