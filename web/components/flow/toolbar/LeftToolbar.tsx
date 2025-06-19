@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React, { useState } from "react";
 import { Settings, ChevronDown, Github, Book, Plus, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -69,7 +70,7 @@ export const LeftToolbar = () => {
               className="border-0 !bg-transparent hover:!bg-gray-700/20"
             >
               <div className="flex items-center h-[36px] hover:bg-gray-100 dark:hover:bg-gray-800/30 rounded-md  pr-[8px]  p-2 pl-0">
-                <img
+                <Image
                   src={prompticLogo.src}
                   alt="promptic"
                   className="w-[36px] h-[36px]"

@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -41,8 +42,8 @@ export default function Footer() {
         Open source infrastructure for prompt engineering. &copy;{" "}
         {new Date().getFullYear()} Promptic.
       </div>
-      <img
-        src="/logo.png"
+      <Image 
+        src={"/logo.png"}
         alt="Promptic Logo"
         width={32}
         height={32}

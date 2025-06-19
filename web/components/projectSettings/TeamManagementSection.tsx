@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -166,7 +167,7 @@ function TeamManagementSection({
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12 ring-2 ring-white dark:ring-slate-700">
                       {projectUser?.profile?.profilePicture ? (
-                        <img
+                        <Image
                           src={projectUser.profile.profilePicture}
                           alt={`${projectUser.profile.firstName} ${projectUser.profile.lastName}`}
                           className="h-full w-full object-cover"
