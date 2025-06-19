@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { NodeProps } from "@xyflow/react";
 import {
@@ -313,7 +314,7 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
                       {peer.profilePicture && (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <img
+                            <Image 
                               src={peer.profilePicture}
                               alt={`${peer.name || "User"}'s profile`}
                               className="w-[28px] h-[28px] rounded-full border-2 border-white shadow-sm"

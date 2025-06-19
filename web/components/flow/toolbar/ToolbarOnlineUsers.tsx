@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useMemo, memo, useState } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import {
@@ -42,7 +43,7 @@ const UserAvatar: React.FC<UserAvatarProps> = memo(
                 borderColor: user?.color || "#6b7280",
               }}
             >
-              <img
+              <Image
                 src={user?.profilePicture}
                 alt={avatarAlt}
                 className="w-full h-full object-cover"
