@@ -1,8 +1,13 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
-import { init } from "@instantdb/admin";
 import dotenv from "dotenv";
-
+import {
+  getProjectPromptsFromInstant,
+  getPromptFromInstant,
+  validatePromptInProject,
+  updatePromptContent,
+} from "./services/instant";
+import { PromptRequest, UpdatePromptRequest } from "./types";
 dotenv.config();
 
 const app = express();
@@ -10,19 +15,50 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-interface PromptRequest {
-  promptKey: string;
-  projectKey: string;
-}
-
-interface PromptResult {
-  prompts?: Array<{ content: string; variables: string }>;
-  error?: string;
-}
-
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
+
+app.get(
+  "/api/projectPrompts/:projectKey",
+  async (req: Request, res: Response) => {
+    const { projectKey } = req.params;
+
+    if (!projectKey || typeof projectKey !== "string") {
+      return res.status(400).json({ error: "Missing or invalid 'projectKey'" });
+    }
+
+    try {
+      const result = await getProjectPromptsFromInstant(projectKey);
+
+      if (result.error) {
+        return res.status(500).json({ error: result.error });
+      }
+
+      if (!result.projects || result.projects.length === 0) {
+        return res.status(404).json({ error: "Project not found" });
+      }
+
+      const project = result.projects[0];
+      return res.status(200).json({
+        projectId: project.id,
+        projectName: project.name,
+        projectKey: project.key,
+        prompts: project.prompts.map((prompt) => ({
+          id: prompt.id,
+          name: prompt.name,
+          content: prompt.content,
+          variables: prompt.variables,
+          createdAt: prompt.createdAt,
+          updatedAt: prompt.updatedAt,
+        })),
+      });
+    } catch (error) {
+      console.error("Server error:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
 
 app.post(
   "/api/prompt",
@@ -55,28 +91,56 @@ app.post(
   }
 );
 
-async function getPromptFromInstant(
-  promptName: string,
-  projectKey: string
-): Promise<PromptResult> {
-  try {
-    const db = init({
-      appId: process.env.INSTANTDB_APP_ID || "",
-      adminToken: process.env.INSTANTDB_ADMIN_TOKEN || "",
-    });
+app.put(
+  "/api/updatePrompt",
+  async (req: Request<{}, {}, UpdatePromptRequest>, res: Response) => {
+    const { projectKey, promptId, content } = req.body;
 
-    return (await db.query({
-      prompts: {
-        $: {
-          where: {
-            and: [{ name: promptName }, { "project.key": projectKey }],
-          },
-        },
-      },
-    })) as unknown as PromptResult;
-  } catch (error) {
-    return { error: (error as Error).message };
+    // Validate required fields
+    if (!projectKey || typeof projectKey !== "string") {
+      return res.status(400).json({ error: "Missing or invalid 'projectKey'" });
+    }
+
+    if (!promptId || typeof promptId !== "string") {
+      return res.status(400).json({ error: "Missing or invalid 'promptId'" });
+    }
+
+    if (!content || typeof content !== "string") {
+      return res.status(400).json({ error: "Missing or invalid 'content'" });
+    }
+
+    try {
+      // Efficiently verify that the prompt belongs to the specified project
+      const validation = await validatePromptInProject(promptId, projectKey);
+
+      if (validation.error) {
+        if (validation.error === "Prompt not found") {
+          return res.status(404).json({ error: "Prompt not found" });
+        }
+        return res.status(500).json({ error: validation.error });
+      }
+
+      if (!validation.isValid) {
+        return res.status(403).json({
+          error: "Prompt does not belong to the specified project",
+        });
+      }
+
+      // Update the prompt content
+      const updateResult = await updatePromptContent(promptId, content);
+
+      if (updateResult.error) {
+        return res.status(500).json({ error: updateResult.error });
+      }
+
+      return res.status(200).json({
+        message: "Prompt updated successfully",
+        promptId: promptId,
+        updatedContent: content,
+      });
+    } catch (error) {
+      console.error("Server error:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
   }
-}
-
-export default app;
+);
