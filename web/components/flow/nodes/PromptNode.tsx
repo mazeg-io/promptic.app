@@ -8,6 +8,7 @@ import {
   Trash,
   Edit3,
   FileText,
+  History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -27,6 +28,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import HistoryModal from "../HistoryModal";
 
 export interface PromptNodeData extends Record<string, unknown> {
   name: string;
@@ -61,6 +63,9 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
   const { profile } = useGlobal();
   const [prompt, setPrompt] = useState(data.prompt);
   const [localVariables, setLocalVariables] = useState(data.variables || "");
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<string | null>(
+    null
+  );
   const debounceTimeoutRef = useRef<NodeJS.Timeout>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
@@ -269,6 +274,13 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
 
   return (
     <>
+      {isHistoryModalOpen && (
+        <HistoryModal
+          isOpen={!!isHistoryModalOpen}
+          onClose={() => setIsHistoryModalOpen(null)}
+          promptId={isHistoryModalOpen}
+        />
+      )}
       <Card
         className={`
           min-w-[500px] max-w-[500px] cursor-pointer
@@ -343,6 +355,15 @@ export const PromptNode: React.FC<PromptNodeProps> = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    setIsHistoryModalOpen(id);
+                  }}
+                >
+                  <History className="h-4 w-4 mr-2" />
+                  History
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={async (e) => {
                     e.stopPropagation();

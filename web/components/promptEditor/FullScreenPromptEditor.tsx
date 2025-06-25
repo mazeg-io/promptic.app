@@ -96,9 +96,10 @@ export const FullScreenPromptEditor: React.FC<FullScreenPromptEditorProps> = ({
 
   const extractVariables = useCallback((prompt: string) => {
     const variables = prompt.match(/{{.*?}}/g);
-    return variables
-      ?.map((variable) => variable.replace(/{{|}}/g, ""))
-      .join(", ");
+    return (
+      variables?.map((variable) => variable.replace(/{{|}}/g, "")).join(", ") ||
+      ""
+    );
   }, []);
 
   const updatePromptInDB = useCallback(

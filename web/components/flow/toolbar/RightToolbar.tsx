@@ -14,9 +14,11 @@ import {
 import DocsModal from "@/components/utils/DocsModal";
 import { cn } from "@/lib/utils";
 import { db } from "@/instant";
+import { id } from "@instantdb/react";
 
 export const RightToolbar = ({ room }: { room: any }) => {
   const { theme, setTheme, activeProject } = useGlobal();
+  const { user } = db.useAuth();
   const [isProjectSettingsModalOpen, setIsProjectSettingsModalOpen] =
     useState(false);
   const [isDocsModalOpen, setIsDocsModalOpen] = useState(false);
@@ -34,6 +36,7 @@ export const RightToolbar = ({ room }: { room: any }) => {
                 project: activeProject.id,
               },
             },
+            versions: {},
           },
         }
       : null
@@ -53,28 +56,47 @@ export const RightToolbar = ({ room }: { room: any }) => {
   }, [promptsData]);
 
   const handlePublish = async () => {
-    if (isSynced || isPublishing) return;
+    if (isSynced || isPublishing || !user?.id) return;
 
     setIsPublishing(true);
 
     try {
-      // Get all prompts that need syncing
       const promptsToSync =
         promptsData?.prompts?.filter(
           (prompt) => prompt.liveContent !== prompt.content
         ) || [];
 
-      // Update all prompts concurrently
-      const updatePromises = promptsToSync.map((prompt) =>
-        db.transact(
+      const transactionPromises = promptsToSync.map(async (prompt) => {
+        const existingVersions = prompt.versions || [];
+        const maxVersionNumber =
+          existingVersions.length > 0
+            ? Math.max(...existingVersions.map((v) => v.versionNumber))
+            : 0;
+        const nextVersionNumber = maxVersionNumber + 1;
+
+        // (update + create version)
+        return db.transact([
           db.tx.prompts[prompt.id].update({
             content: prompt.liveContent,
             updatedAt: Date.now(),
-          })
-        )
-      );
+          }),
+          db.tx.prompt_versions[id()]
+            .update({
+              promptId: prompt.id,
+              versionNumber: nextVersionNumber,
+              content: prompt.liveContent,
+              variables: prompt.variables,
+              name: prompt.name,
+              userIdchangedBy: user.id,
+              changeDescription: "Published from editor",
+              createdAt: Date.now(),
+            })
+            .link({ prompt: prompt.id, $user: user.id }),
+        ]);
+      });
 
-      await Promise.all(updatePromises);
+      // Execute all transactions concurrently
+      await Promise.all(transactionPromises);
 
       // Show success feedback
       setIsPublished(true);

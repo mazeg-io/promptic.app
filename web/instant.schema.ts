@@ -52,6 +52,17 @@ const _schema = i.schema({
       createdAt: i.number(),
       updatedAt: i.number().indexed(),
     }),
+    prompt_versions: i.entity({
+      id: i.string(),
+      promptId: i.string(),
+      versionNumber: i.number().indexed(),
+      content: i.string(),
+      variables: i.string().optional(),
+      name: i.string(),
+      userIdchangedBy: i.string(), // userId who made the change
+      changeDescription: i.string().optional(),
+      createdAt: i.number(),
+    }),
   },
   links: {
     profileUser: {
@@ -73,6 +84,14 @@ const _schema = i.schema({
     userProjects: {
       forward: { on: "projects", has: "many", label: "$users" },
       reverse: { on: "$users", has: "many", label: "projects" },
+    },
+    promptVersions: {
+      forward: { on: "prompt_versions", has: "one", label: "prompt" },
+      reverse: { on: "prompts", has: "many", label: "versions" },
+    },
+    versionUser: {
+      forward: { on: "prompt_versions", has: "one", label: "$user" },
+      reverse: { on: "$users", has: "many", label: "promptVersions" },
     },
   },
 });
