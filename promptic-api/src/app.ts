@@ -8,6 +8,7 @@ import {
   updatePromptContent,
 } from "./services/instant";
 import { PromptRequest, UpdatePromptRequest } from "./types";
+import logger from "./lib/logger";
 dotenv.config();
 
 const app = express();
@@ -54,7 +55,7 @@ app.get(
         })),
       });
     } catch (error) {
-      console.error("Server error:", error);
+      logger.error("Server error:", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   }
@@ -85,7 +86,7 @@ app.post(
         variables: result.prompts[0].variables,
       });
     } catch (error) {
-      console.error("Server error:", error);
+      logger.error("Server error:", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   }
@@ -139,8 +140,10 @@ app.put(
         updatedContent: content,
       });
     } catch (error) {
-      console.error("Server error:", error);
+      logger.error("Server error:", error);
       return res.status(500).json({ error: "Internal server error" });
     }
   }
 );
+
+export default app;

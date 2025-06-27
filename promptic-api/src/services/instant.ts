@@ -1,4 +1,5 @@
-import { init } from "@instantdb/admin";
+import { db } from "../lib/instantdb";
+import logger from "../lib/logger";
 import {
   PromptRequest,
   PromptResult,
@@ -13,11 +14,6 @@ export async function getPromptFromInstant(
   projectKey: string
 ): Promise<PromptResult> {
   try {
-    const db = init({
-      appId: process.env.INSTANTDB_APP_ID || "",
-      adminToken: process.env.INSTANTDB_ADMIN_TOKEN || "",
-    });
-
     return (await db.query({
       prompts: {
         $: {
@@ -36,11 +32,6 @@ export async function getProjectPromptsFromInstant(
   projectKey: string
 ): Promise<ProjectPromptsResult> {
   try {
-    const db = init({
-      appId: process.env.INSTANTDB_APP_ID || "",
-      adminToken: process.env.INSTANTDB_ADMIN_TOKEN || "",
-    });
-
     return (await db.query({
       projects: {
         $: {
@@ -61,11 +52,6 @@ export async function validatePromptInProject(
   projectKey: string
 ): Promise<{ isValid: boolean; error?: string }> {
   try {
-    const db = init({
-      appId: process.env.INSTANTDB_APP_ID || "",
-      adminToken: process.env.INSTANTDB_ADMIN_TOKEN || "",
-    });
-
     const result = (await db.query({
       prompts: {
         $: {
@@ -77,9 +63,6 @@ export async function validatePromptInProject(
       },
     })) as unknown as PromptProjectValidationResult;
 
-    // Add debugging
-    console.log("Validation query result:", JSON.stringify(result, null, 2));
-
     if (result.error) {
       return { isValid: false, error: result.error };
     }
@@ -89,9 +72,6 @@ export async function validatePromptInProject(
     }
 
     const prompt = result.prompts[0];
-    console.log("Prompt data:", JSON.stringify(prompt, null, 2));
-    console.log("Expected projectKey:", projectKey);
-    console.log("Actual project data:", prompt.project);
 
     // Fix: project is an array, so we need to check the first element's key
     const isValid =
@@ -99,11 +79,10 @@ export async function validatePromptInProject(
       Array.isArray(prompt.project) &&
       prompt.project.length > 0 &&
       prompt.project[0].key === projectKey;
-    console.log("Validation result:", isValid);
 
     return { isValid };
   } catch (error) {
-    console.error("Validation error:", error);
+    logger.error("Validation error:", error);
     return { isValid: false, error: (error as Error).message };
   }
 }
@@ -113,11 +92,6 @@ export async function updatePromptContent(
   content: string
 ): Promise<UpdatePromptResult> {
   try {
-    const db = init({
-      appId: process.env.INSTANTDB_APP_ID || "",
-      adminToken: process.env.INSTANTDB_ADMIN_TOKEN || "",
-    });
-
     await db.transact([
       db.tx.prompts[promptId].update({
         content: content,
