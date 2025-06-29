@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Hand, MousePointer2 } from "lucide-react";
 import React from "react";
 import BottomMenuEmojies from "./BottomMenuEmojies";
@@ -56,7 +57,7 @@ function BottomMenu({
       </div>
       <div className={`group max-w-[144px] w-full`}>
         <div className="flex items-center px-[12px] h-full border-r border-gray-300 dark:border-gray-600 cursor-pointer">
-          <img
+          <Image
             onClick={handleCreatePromptNode}
             src={createPromptIllustration.src}
             alt="Create a new prompt"
